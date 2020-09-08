@@ -15,8 +15,11 @@ console.log("Is it working? Ping ->", process.env.PING);
 const app = express();
 const port = process.env.PORT;
 app.use(cors());
+
+// Needed for POSTing
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
 // JSForce connection initial test
 conn.login(
@@ -262,6 +265,143 @@ app.get("/case/:id", function(req, res) {
           console.log(caseting);
           res.send(caseting);
         });
+
+      /* End query logic */
+    }
+  );
+});
+
+// Case -> describe(Reason) (Option select fields metadata)
+
+app.get("/case/describe/reason", function(req, res) {
+  // Connection login setup
+  conn.login(
+    process.env.SF_USERNAME,
+    process.env.SF_PASSWORD + process.env.SF_SECURITY_TOKEN,
+    function(loginErr, loginResult) {
+      if (loginErr) {
+        return console.error(loginErr);
+      }
+      console.log("Case -> describe(Reason)");
+
+      /* Start query logic */
+
+      let query = conn.sobject("Case").describe(function(err, meta) {
+        if (err) {
+          return console.error(err);
+        }
+        console.log("Getting the reason options");
+        console.log("Label : " + meta.label);
+        console.log("Num of Fields : " + meta.fields.length);
+        // console.log("Reason options" + meta.fields);
+        // Loop through to find the Case reason options with https://usefulangle.com/post/3/javascript-search-array-of-objects
+        let reasonFieldIndex = -1;
+        for (let i = 0; i < meta.fields.length; i++) {
+          if (meta.fields[i].name == "Reason") {
+            reasonFieldIndex = i;
+            break;
+          }
+        }
+        reasonFieldOptions = meta.fields[reasonFieldIndex].picklistValues;
+
+        // Attempting to map into the desired [{label: "", value: ""}] form
+        // Using Array.prototype.map() methods
+
+        //
+        res.send(reasonFieldOptions);
+      });
+
+      /* End query logic */
+    }
+  );
+});
+
+// Case -> describe(Type) (Option select fields metadata)
+
+app.get("/case/describe/type", function(req, res) {
+  // Connection login setup
+  conn.login(
+    process.env.SF_USERNAME,
+    process.env.SF_PASSWORD + process.env.SF_SECURITY_TOKEN,
+    function(loginErr, loginResult) {
+      if (loginErr) {
+        return console.error(loginErr);
+      }
+      console.log("Case -> describe(Type)");
+
+      /* Start query logic */
+
+      let query = conn.sobject("Case").describe(function(err, meta) {
+        if (err) {
+          return console.error(err);
+        }
+        console.log("Getting the type options");
+        console.log("Label : " + meta.label);
+        console.log("Num of Fields : " + meta.fields.length);
+        // console.log("Type options" + meta.fields);
+        // Loop through to find the Case type options with https://usefulangle.com/post/3/javascript-search-array-of-objects
+        let typeFieldIndex = -1;
+        for (let i = 0; i < meta.fields.length; i++) {
+          if (meta.fields[i].name == "Type") {
+            typeFieldIndex = i;
+            break;
+          }
+        }
+        typeFieldOptions = meta.fields[typeFieldIndex].picklistValues;
+
+        // Attempting to map into the desired [{label: "", value: ""}] form
+        // Using Array.prototype.map() methods
+
+        //
+        res.send(typeFieldOptions);
+      });
+
+      /* End query logic */
+    }
+  );
+});
+
+// Case -> new
+
+app.post("/case/new", function(req, res) {
+  console.log("Got body:", req.body);
+  let accountId = req.body.accountId;
+  let subject = req.body.subject;
+  let reason = req.body.reason;
+  let type = req.body.type;
+  let description = req.body.description;
+  let params = [accountId, subject, reason, type, description];
+  console.log("Here are the params -->" + params);
+  // Connection login setup
+  conn.login(
+    process.env.SF_USERNAME,
+    process.env.SF_PASSWORD + process.env.SF_SECURITY_TOKEN,
+    function(loginErr, loginResult) {
+      if (loginErr) {
+        return console.error(loginErr);
+      }
+      console.log("Login result: " + loginResult);
+      console.log("Case -> new");
+
+      /* Start query logic */
+
+      let query = conn.sobject("Case").create(
+        {
+          AccountId: accountId,
+          Subject: subject,
+          Reason: reason,
+          Type: type,
+          Description: description
+        },
+        function(err, ret) {
+          if (err || !ret.success) {
+            return console.error(err, ret);
+          }
+          console.log("Created case id : " + ret.id);
+          console.log(ret);
+          res.send(ret);
+        }
+      );
 
       /* End query logic */
     }

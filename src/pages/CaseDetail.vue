@@ -75,6 +75,22 @@
             </div>
           </q-card-section>
         </q-card>
+        <q-card class="col-12 q-mb-md">
+          <q-card-section class="text-h6">
+            Case Activity Timeline
+          </q-card-section>
+          <q-separator />
+          <q-card-section>
+            <q-scroll-area style="height: 600px;">
+              <case-activity />
+            </q-scroll-area>
+          </q-card-section>
+          <q-card-section>
+            <div class="row">
+              <pre>{{ emailMessages }}</pre>
+            </div>
+          </q-card-section>
+        </q-card>
       </div>
     </div>
 
@@ -86,6 +102,9 @@
 
 <script>
 export default {
+  components: {
+    "case-activity": require("components/CaseActivity.vue").default
+  },
   data() {
     return {
       isLoading: false,

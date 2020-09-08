@@ -3,6 +3,14 @@
     <div>
       <div class="row q-mb-xl">
         <div class="col text-center text-h3">The Case Object</div>
+        <q-space />
+        <q-btn
+          color="primary"
+          icon="assignment"
+          label="New Case"
+          @click="showCreateCase = true"
+          no-caps
+        />
       </div>
       <div v-if="errored" class="row">
         <div class="col text-center text-negative">
@@ -44,6 +52,85 @@
         </div>
       </div>
     </div>
+    <q-dialog v-model="showCreateCase">
+      <q-card class="col-12 q-pa-md" style="width: 400px">
+        <q-card-section class="text-h6">
+          Shipping Address
+        </q-card-section>
+        <q-separator />
+        <q-card-section>
+          <q-form
+            @submit="onSubmitCaseForm"
+            @reset="onResetCaseForm"
+            class="q-gutter-md"
+          >
+            <q-input v-model="createCaseForm.accountId" class="hidden" />
+            <q-input
+              v-model="createCaseForm.subject"
+              label="Subject"
+              hint="Subject for this case"
+              :rules="[
+                val =>
+                  (val && val.length < 100) ||
+                  'Please type something with up to 100 characters'
+              ]"
+              maxlength="100"
+              counter
+              lazy-rules
+              outlined
+              dense
+            />
+            <q-select
+              v-model="createCaseForm.reason"
+              :options="createCaseFormReasonOptions"
+              label="Reason"
+              outlined
+              dense
+              emit-value
+            />
+            <q-select
+              v-model="createCaseForm.type"
+              :options="createCaseFormTypeOptions"
+              label="Type"
+              outlined
+              dense
+              emit-value
+            />
+            <q-input
+              v-model="createCaseForm.description"
+              type="textarea"
+              label="Description"
+              hint="Description for this case"
+              lazy-rules
+              :rules="[
+                val =>
+                  (val && val.length < 800) ||
+                  'Please type something with up to 800 characters'
+              ]"
+              maxlength="800"
+              counter
+              outlined
+              dense
+            />
+            <q-toggle
+              v-model="createCaseForm.accept"
+              label="I accept the rules and terms"
+            />
+
+            <div>
+              <q-btn label="Submit" type="submit" color="primary" />
+              <q-btn
+                label="Reset"
+                type="reset"
+                color="primary"
+                flat
+                class="q-ml-sm"
+              />
+            </div>
+          </q-form>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
     <q-inner-loading :showing="isLoading">
       <q-spinner-ball size="50px" color="primary" />
     </q-inner-loading>
@@ -56,7 +143,20 @@ export default {
     return {
       isLoading: false,
       cases: [],
-      errored: false
+      errored: false,
+      showCreateCase: false,
+      createCaseForm: {
+        accountId: "0014K000004X8MNQA0",
+        subject: null,
+        description: null,
+        reason: null,
+        type: null,
+        accept: false
+      },
+      createCaseFormReasonOptions: ["Reason1", "Reason2", "Reason3"],
+      createCaseFormTypeOptions: ["Type1", "Type2", "Type3"],
+      name: null,
+      age: null
     };
   },
   methods: {
@@ -76,10 +176,78 @@ export default {
     },
     toCaseDetail(caseObjectId) {
       this.$router.push({ path: `/case/${caseObjectId}` });
+    },
+    onSubmitCaseForm() {
+      if (this.createCaseForm.accept !== true) {
+        this.$q.notify({
+          color: "red-5",
+          textColor: "white",
+          icon: "warning",
+          message: "You need to accept the rules and terms first"
+        });
+      } else {
+        this.$axios
+          .post("http://localhost:3000/case/new", {
+            accountId: this.createCaseForm.accountId,
+            subject: this.createCaseForm.subject,
+            reason: this.createCaseForm.reason,
+            type: this.createCaseForm.type,
+            description: this.createCaseForm.description
+          })
+          .then(response => {
+            console.log(response);
+            this.$q.notify({
+              color: "green-4",
+              textColor: "white",
+              icon: "cloud_done",
+              message: "Submitted"
+            });
+            this.showCreateCase = false;
+            this.onResetCaseForm();
+            this.getCases();
+          })
+          .catch(error => {
+            console.log(error);
+            this.errored = true;
+          });
+      }
+    },
+    onResetCaseForm() {
+      this.createCaseForm.subject = null;
+      this.createCaseForm.reason = null;
+      this.createCaseForm.type = null;
+      this.createCaseForm.description = null;
+      this.createCaseForm.accept = false;
+    },
+    getCreateCaseFormReasonOptions() {
+      this.$axios
+        .get("http://localhost:3000/case/describe/reason")
+        .then(response => {
+          this.createCaseFormReasonOptions = response.data;
+          console.log(this.createCaseFormReasonOptions);
+        })
+        .catch(error => {
+          console.log(error);
+          this.errored = true;
+        });
+    },
+    getCreateCaseFormTypeOptions() {
+      this.$axios
+        .get("http://localhost:3000/case/describe/type")
+        .then(response => {
+          this.createCaseFormTypeOptions = response.data;
+          console.log(this.createCaseFormTypeOptions);
+        })
+        .catch(error => {
+          console.log(error);
+          this.errored = true;
+        });
     }
   },
   mounted() {
     this.getCases();
+    this.getCreateCaseFormReasonOptions();
+    this.getCreateCaseFormTypeOptions();
   }
 };
 </script>
