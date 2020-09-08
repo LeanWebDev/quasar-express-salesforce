@@ -116,6 +116,53 @@ app.get("/account/:id", function(req, res) {
   );
 });
 
+// Account -> update
+
+app.post("/account/update", function(req, res) {
+  console.log("Got body:", req.body);
+  let accountId = req.body.accountId;
+  let website = req.body.website;
+  let phone = req.body.phone;
+  let industry = req.body.industry;
+  let numberOfEmployees = req.body.numberOfEmployees;
+  let params = [accountId, website, phone, industry, numberOfEmployees];
+  console.log("Here are the params -->" + params);
+  // Connection login setup
+  conn.login(
+    process.env.SF_USERNAME,
+    process.env.SF_PASSWORD + process.env.SF_SECURITY_TOKEN,
+    function(loginErr, loginResult) {
+      if (loginErr) {
+        return console.error(loginErr);
+      }
+      console.log("Login result: " + loginResult);
+      console.log("Account -> update");
+
+      /* Start query logic */
+
+      let query = conn.sobject("Account").update(
+        {
+          Id: accountId,
+          Website: website,
+          Phone: phone,
+          Industry: industry,
+          NumberOfEmployees: numberOfEmployees
+        },
+        function(err, ret) {
+          if (err || !ret.success) {
+            return console.error(err, ret);
+          }
+          console.log("Updated this account : " + ret.id);
+          console.log(ret);
+          res.send(ret);
+        }
+      );
+
+      /* End query logic */
+    }
+  );
+});
+
 //////////// Contact /////////////
 
 // Contact -> all
@@ -201,7 +248,7 @@ app.get("/contact/:id", function(req, res) {
 app.get("/case/all", function(req, res) {
   let records = [];
   let q =
-    "SELECT Id, Subject, Type, CaseNumber, Description, OwnerId, Reason, SourceId, CreatedDate, ClosedDate, Product__c FROM Case";
+    "SELECT Id, Subject, Status, Type, CaseNumber, Description, OwnerId, Reason, SourceId, CreatedDate, ClosedDate, Product__c FROM Case ORDER BY CreatedDate DESC";
   // Connection login setup
   conn.login(
     process.env.SF_USERNAME,
@@ -415,7 +462,7 @@ app.post("/case/new", function(req, res) {
 app.get("/email-message/all", function(req, res) {
   let records = [];
   let q =
-    "SELECT ParentId, Status, Subject, TextBody, HtmlBody, MessageDate, CreatedById FROM EmailMessage";
+    "SELECT ParentId, Status, Subject, TextBody, HtmlBody, MessageDate, CreatedById FROM EmailMessage ORDER BY MessageDate DESC";
   // Connection login setup
   conn.login(
     process.env.SF_USERNAME,
@@ -456,7 +503,7 @@ app.get("/email-message/related/:caseId", function(req, res) {
   let records = [];
   let caseId = req.params.caseId;
   console.log(`THIS IS THE CASE ID TO QUERY WITH!!!! ${caseId}`);
-  let q = `SELECT ParentId, Status, Subject, TextBody, MessageDate FROM EmailMessage WHERE ParentId = '${caseId}'`;
+  let q = `SELECT ParentId, Status, Subject, TextBody, MessageDate FROM EmailMessage WHERE ParentId = '${caseId}' ORDER BY MessageDate DESC`;
   // Connection login setup
   conn.login(
     process.env.SF_USERNAME,
@@ -485,6 +532,53 @@ app.get("/email-message/related/:caseId", function(req, res) {
           console.error(err);
         })
         .run({ autoFetch: true, maxFetch: 4000 }); // synonym of Query#execute();
+
+      /* End query logic */
+    }
+  );
+});
+
+// EmailMessage -> new
+
+app.post("/email-message/new", function(req, res) {
+  console.log("Got body:", req.body);
+  let parentId = req.body.parentId;
+  let subject = req.body.subject;
+  let textBody = req.body.textBody;
+  // let createdById = req.body.createdById;
+  let messageDate = req.body.messageDate;
+  let params = [parentId, subject, textBody, messageDate];
+  console.log("Here are the params -->" + params);
+  // Connection login setup
+  conn.login(
+    process.env.SF_USERNAME,
+    process.env.SF_PASSWORD + process.env.SF_SECURITY_TOKEN,
+    function(loginErr, loginResult) {
+      if (loginErr) {
+        return console.error(loginErr);
+      }
+      console.log("Login result: " + loginResult);
+      console.log("Case -> new");
+
+      /* Start query logic */
+
+      let query = conn.sobject("EmailMessage").create(
+        {
+          ParentId: parentId,
+          Subject: subject,
+          TextBody: textBody,
+          // CreatedById: createdById,
+          MessageDate: messageDate
+        },
+        function(err, ret) {
+          if (err || !ret.success) {
+            return console.error(err, ret);
+          }
+          console.log("Created EmailMessage id : " + ret.id);
+          console.log(ret);
+          res.send(ret);
+        }
+      );
 
       /* End query logic */
     }

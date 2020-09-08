@@ -12,6 +12,12 @@
           no-caps
         />
       </div>
+      <div class="row q-mb-xl">
+        <div class="text-h5">Web-To-Case</div>
+        <q-separator spaced />
+        <web-to-case />
+        <q-separator spaced />
+      </div>
       <div v-if="errored" class="row">
         <div class="col text-center text-negative">
           An error has occured.
@@ -55,7 +61,7 @@
     <q-dialog v-model="showCreateCase">
       <q-card class="col-12 q-pa-md" style="width: 400px">
         <q-card-section class="text-h6">
-          Shipping Address
+          Add a new case
         </q-card-section>
         <q-separator />
         <q-card-section>
@@ -139,6 +145,9 @@
 
 <script>
 export default {
+  components: {
+    "web-to-case": require("../components/WebToCase.vue").default
+  },
   data() {
     return {
       isLoading: false,

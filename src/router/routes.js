@@ -11,6 +11,7 @@ const routes = [
       },
       { path: "/contact", component: () => import("pages/Contact.vue") },
       { path: "/case", component: () => import("pages/Case.vue") },
+      { path: "/case-table", component: () => import("pages/CaseTable.vue") },
       {
         path: "/case/:caseObjectId",
         component: () => import("pages/CaseDetail.vue")

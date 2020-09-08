@@ -73,6 +73,12 @@ const linksData = [
     link: "/case"
   },
   {
+    title: "Case Table",
+    caption: "/case-table",
+    icon: "list",
+    link: "/case-table"
+  },
+  {
     title: "EmailMessage",
     caption: "/email-message",
     icon: "rss_feed",

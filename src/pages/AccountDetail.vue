@@ -2,7 +2,7 @@
   <q-page padding>
     <div class="row q-mb-xl">
       <div class="col-12 text-center text-h3">
-        {{ account.Name }} ({{ account.AccountNumber }})
+        {{ account.name }} ({{ accountId }})
       </div>
       <div v-if="account.Atlas__c" class="col-12 text-center text-h3">
         <q-btn color="blue" glossy rounded>Atlas Enabled</q-btn>
@@ -18,34 +18,48 @@
           <q-card-section>
             <div class="row">
               <div class="col q-gutter-md">
-                <q-input
-                  :value="account.Website"
-                  type="url"
-                  label="Website"
-                  outlined
-                  dense
-                />
-                <q-input
-                  :value="account.Phone"
-                  type="tel"
-                  label="Phone"
-                  outlined
-                  dense
-                />
-                <q-input
-                  :value="account.Industry"
-                  type="text"
-                  label="Industry"
-                  outlined
-                  dense
-                />
-                <q-input
-                  :value="account.NumberOfEmployees"
-                  type="text"
-                  label="Number of employees"
-                  outlined
-                  dense
-                />
+                <q-form
+                  @submit.prevent="onSubmitAccountFormUpdate"
+                  class="q-gutter-md"
+                >
+                  <q-input
+                    v-model="account.website"
+                    type="text"
+                    label="Website"
+                    outlined
+                    dense
+                  />
+                  <q-input
+                    v-model="account.phone"
+                    type="tel"
+                    label="Phone"
+                    outlined
+                    dense
+                  />
+                  <q-input
+                    v-model="account.industry"
+                    type="text"
+                    label="Industry"
+                    outlined
+                    dense
+                  />
+                  <q-input
+                    v-model="account.numberOfEmployees"
+                    type="text"
+                    label="Number of employees"
+                    outlined
+                    dense
+                  />
+                  <q-btn
+                    type="submit"
+                    :loading="isLoading"
+                    class="float-right"
+                    color="primary"
+                    unelevated
+                    no-caps
+                    >Save</q-btn
+                  >
+                </q-form>
               </div>
             </div>
           </q-card-section>
@@ -186,7 +200,13 @@ export default {
     return {
       isLoading: false,
       accountId: "",
-      account: {},
+      account: {
+        name: null,
+        website: null,
+        phone: null,
+        industry: null,
+        numberOfEmployees: null
+      },
       accountManager: {},
       shippingAddress: {},
       billingAddress: {}
@@ -228,7 +248,11 @@ export default {
       this.$axios
         .get("http://localhost:3000/account/" + accountId)
         .then(response => {
-          this.account = response.data;
+          this.account.name = response.data.Name;
+          this.account.website = response.data.Website;
+          this.account.phone = response.data.Phone;
+          this.account.industry = response.data.Industry;
+          this.account.numberOfEmployees = response.data.NumberOfEmployees;
           this.billingAddress = response.data.BillingAddress;
           this.shippingAddress = response.data.ShippingAddress;
           this.getAccountManager(response.data.OwnerId);
@@ -253,6 +277,32 @@ export default {
           console.log(error);
           this.errored = true;
           this.isLoading = false;
+        });
+    },
+    onSubmitAccountFormUpdate() {
+      this.isLoading = true;
+      this.$axios
+        .post("http://localhost:3000/account/update", {
+          accountId: this.accountId,
+          website: this.account.website,
+          phone: this.account.phone,
+          industry: this.account.industry,
+          numberOfEmployees: this.numberOfEmployees
+        })
+        .then(response => {
+          console.log(response);
+          this.$q.notify({
+            color: "green-4",
+            textColor: "white",
+            icon: "cloud_done",
+            message: "Account has been updated"
+          });
+          this.isLoading = false;
+          this.getAccountDetail(this.accountId);
+        })
+        .catch(error => {
+          console.log(error);
+          this.errored = true;
         });
     }
   },
