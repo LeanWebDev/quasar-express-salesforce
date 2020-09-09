@@ -83,6 +83,12 @@ const linksData = [
     caption: "/email-message",
     icon: "rss_feed",
     link: "/email-message"
+  },
+  {
+    title: "Cloud Functions",
+    caption: "/cloud-functions",
+    icon: "whatshot",
+    link: "/cloud-functions"
   }
 ];
 

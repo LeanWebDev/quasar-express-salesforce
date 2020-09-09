@@ -23,6 +23,10 @@ const routes = [
       {
         path: "/email-message",
         component: () => import("pages/EmailMessage.vue")
+      },
+      {
+        path: "/cloud-functions",
+        component: () => import("pages/CloudFunctions.vue")
       }
     ]
   },
