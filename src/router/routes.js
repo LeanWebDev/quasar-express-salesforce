@@ -10,6 +10,10 @@ const routes = [
         component: () => import("pages/AccountDetail.vue")
       },
       { path: "/contact", component: () => import("pages/Contact.vue") },
+      {
+        path: "/contact/:contactId",
+        component: () => import("pages/ContactDetail.vue")
+      },
       { path: "/case", component: () => import("pages/Case.vue") },
       { path: "/case-table", component: () => import("pages/CaseTable.vue") },
       {

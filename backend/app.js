@@ -125,7 +125,35 @@ app.post("/account/update", function(req, res) {
   let phone = req.body.phone;
   let industry = req.body.industry;
   let numberOfEmployees = req.body.numberOfEmployees;
-  let params = [accountId, website, phone, industry, numberOfEmployees];
+  // Billing
+  let billingStreet = req.body.billingStreet;
+  let billingCity = req.body.billingCity;
+  let billingState = req.body.billingState;
+  let billingPostalCode = req.body.billingPostalCode;
+  let billingCountry = req.body.billingCountry;
+  // Shipping
+  let shippingStreet = req.body.shippingStreet;
+  let shippingCity = req.body.shippingCity;
+  let shippingState = req.body.shippingState;
+  let shippingPostalCode = req.body.shippingPostalCode;
+  let shippingCountry = req.body.shippingCountry;
+  let params = [
+    accountId,
+    website,
+    phone,
+    industry,
+    numberOfEmployees,
+    billingStreet,
+    billingCity,
+    billingState,
+    billingPostalCode,
+    billingCountry,
+    shippingStreet,
+    shippingCity,
+    shippingState,
+    shippingPostalCode,
+    shippingCountry
+  ];
   console.log("Here are the params -->" + params);
   // Connection login setup
   conn.login(
@@ -146,7 +174,17 @@ app.post("/account/update", function(req, res) {
           Website: website,
           Phone: phone,
           Industry: industry,
-          NumberOfEmployees: numberOfEmployees
+          NumberOfEmployees: numberOfEmployees,
+          BillingStreet: billingStreet,
+          BillingCity: billingCity,
+          BillingState: billingState,
+          BillingPostalCode: billingPostalCode,
+          BillingCountry: billingCountry,
+          ShippingStreet: shippingStreet,
+          ShippingCity: shippingCity,
+          ShippingState: shippingState,
+          ShippingPostalCode: shippingPostalCode,
+          ShippingCountry: shippingCountry
         },
         function(err, ret) {
           if (err || !ret.success) {
@@ -169,7 +207,7 @@ app.post("/account/update", function(req, res) {
 
 app.get("/contact/all", function(req, res) {
   let records = [];
-  let q = "SELECT Id, Name FROM Contact";
+  let q = "SELECT Id, Name, Department FROM Contact";
   // Connection login setup
   conn.login(
     process.env.SF_USERNAME,
@@ -235,6 +273,54 @@ app.get("/contact/:id", function(req, res) {
           console.log(contact);
           res.send(contact);
         });
+
+      /* End query logic */
+    }
+  );
+});
+
+// Contact => update
+app.post("/contact/update", function(req, res) {
+  console.log("Got body:", req.body);
+  let contactId = req.body.contactId;
+  let firstName = req.body.firstName;
+  let lastName = req.body.lastName;
+  let email = req.body.email;
+  let phone = req.body.phone;
+  let department = req.body.department;
+  let params = [contactId, firstName, lastName, email, phone, department];
+  console.log("Here are the params -->" + params);
+  // Connection login setup
+  conn.login(
+    process.env.SF_USERNAME,
+    process.env.SF_PASSWORD + process.env.SF_SECURITY_TOKEN,
+    function(loginErr, loginResult) {
+      if (loginErr) {
+        return console.error(loginErr);
+      }
+      console.log("Login result: " + loginResult);
+      console.log("Contact -> update");
+
+      /* Start query logic */
+
+      let query = conn.sobject("Contact").update(
+        {
+          Id: contactId,
+          FirstName: firstName,
+          LastName: lastName,
+          Email: email,
+          Phone: phone,
+          Department: department
+        },
+        function(err, ret) {
+          if (err || !ret.success) {
+            return console.error(err, ret);
+          }
+          console.log("Updated this contact : " + ret.id);
+          console.log(ret);
+          res.send(ret);
+        }
+      );
 
       /* End query logic */
     }

@@ -1,6 +1,6 @@
 <template>
   <div class="q-px-lg q-pb-md">
-    <q-timeline>
+    <q-timeline v-if="activity[0]">
       <q-timeline-entry
         v-for="(entry, index) in activity"
         :key="index"
@@ -16,6 +16,11 @@
         </div>
       </q-timeline-entry>
     </q-timeline>
+    <div v-else class="row" style="padding-top: 160px">
+      <div class="col text-center">
+        No email messages for this case yet.
+      </div>
+    </div>
   </div>
 </template>
 

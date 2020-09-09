@@ -40,8 +40,8 @@
             style="min-height: 230px"
           >
             <template v-slot:top>
-              <q-dialog v-model="showViewCase" full-width>
-                <q-card>
+              <q-dialog v-model="showViewCase" v-if="!maximized">
+                <q-card style="width: 70vw">
                   <div class="row">
                     <div class="col">
                       <q-card-section>
@@ -78,19 +78,114 @@
                         </div>
                       </q-card-section>
                       <q-card-actions align="right">
+                        <!-- <a
+                          href="mailto:hello@john.cpm"
+                          class="btn"
+                          v-close-popup
+                          >Send EmailMessage</a
+                        > -->
                         <q-btn
+                          type="a"
+                          href="mailto:hello@john.cpm"
+                          label="Send EmailMessage"
+                          color="grey"
+                          v-close-popup
+                          no-caps
+                          unelevated
+                        ></q-btn>
+                        <!-- <q-btn
                           @click="onSubmitUpdateCaseForm"
                           label="Confirm"
                           color="primary"
                           v-close-popup
                           no-caps
                           unelevated
-                        ></q-btn>
+                        ></q-btn> -->
                       </q-card-actions>
                     </div>
                     <q-separator spaced vertical />
                     <div class="col">
                       <q-scroll-area style="height: 100%">
+                        <case-timeline :activity="emailMessages" />
+                      </q-scroll-area>
+                    </div>
+                  </div>
+                </q-card>
+              </q-dialog>
+              <q-dialog v-model="showViewCase" maximized v-if="maximized">
+                <q-card>
+                  <div class="row">
+                    <div class="col-12">
+                      <q-card-section>
+                        <div class="row">
+                          <div class="col">
+                            <div class="text-h6">
+                              {{ updateCaseForm.Subject }}
+                            </div>
+                          </div>
+                          <q-space />
+                          <div class="col">
+                            <q-btn
+                              label="Close"
+                              color="primary"
+                              class="float-right"
+                              v-close-popup
+                              no-caps
+                              unelevated
+                            ></q-btn>
+                          </div>
+                        </div>
+                      </q-card-section>
+                      <q-separator inset />
+                      <q-card-section>
+                        <div class="row q-col-gutter-md q-mb-md">
+                          <q-input
+                            v-model="updateCaseForm.Subject"
+                            class="col"
+                            label="Subject"
+                            outlined
+                            dense
+                          ></q-input>
+                          <q-select
+                            :options="caseTypes"
+                            v-model="updateCaseForm.Type"
+                            class="col"
+                            label="Type"
+                            outlined
+                            dense
+                          ></q-select>
+                        </div>
+                        <div class="row q-mb-md">
+                          <q-input
+                            v-model="updateCaseForm.Description"
+                            type="textarea"
+                            class="col"
+                            label="Description"
+                            outlined
+                            dense
+                          ></q-input>
+                        </div>
+                      </q-card-section>
+                      <q-card-actions align="right">
+                        <!-- <a
+                          href="mailto:hello@john.cpm"
+                          class="btn"
+                          v-close-popup
+                          >Send EmailMessage</a
+                        > -->
+                        <q-btn
+                          type="a"
+                          href="mailto:hello@john.cpm"
+                          label="Send EmailMessage"
+                          color="grey"
+                          v-close-popup
+                          no-caps
+                          unelevated
+                        ></q-btn>
+                      </q-card-actions>
+                    </div>
+                    <div class="col-12">
+                      <q-scroll-area style="height: 500px">
                         <case-timeline :activity="emailMessages" />
                       </q-scroll-area>
                     </div>
@@ -141,7 +236,7 @@
             <q-spinner-tail size="40px" color="primary" />
           </q-inner-loading>
         </q-card>
-        <skeleton-table v-if="isLoading" />
+        <!-- <skeleton-table v-if="isLoading" /> -->
       </div>
     </div>
     <q-dialog v-model="showCreateCase">
@@ -226,12 +321,13 @@ import { date } from "quasar";
 
 export default {
   components: {
-    "skeleton-table": require("../components/common/SkeletonTable.vue").default,
+    // "skeleton-table": require("../components/common/SkeletonTable.vue").default,
     "case-timeline": require("components/CaseEmailTimeline.vue").default
   },
   data() {
     return {
       accountId: "0014K000004X8MNQA0",
+      maximized: false,
       isLoading: false,
       cases: [],
       emailMessages: [],
@@ -385,7 +481,7 @@ export default {
       this.showViewCase = false;
       this.onResetUpdateCaseForm();
       this.$q.notify({
-        message: "This will evemtually send to SF",
+        message: "This will eventually send to SF",
         color: "grey",
         timeout: 1000
       });

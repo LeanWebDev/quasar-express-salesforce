@@ -27,16 +27,12 @@
                 </q-card-section>
                 <q-separator />
                 <q-card-section class="q-gutter-sm">
-                  <!-- <q-badge
-                    v-if="contact.Industry"
-                    color="secondary"
-                    :label="contact.Industry"
-                  />
                   <q-badge
-                    v-if="contact.Type"
-                    color="accent"
-                    :label="contact.Type"
-                  /> -->
+                    v-if="contact.Department"
+                    color="secondary"
+                    :label="contact.Department"
+                  />
+                  <q-badge v-else color="grey" label="No department added" />
                 </q-card-section>
               </q-card>
             </div>

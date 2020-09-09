@@ -13,10 +13,15 @@
         />
       </div>
       <div class="row q-mb-xl">
-        <div class="text-h5">Web-To-Case</div>
-        <q-separator spaced />
-        <web-to-case />
-        <q-separator spaced />
+        <div class="col-12 text-center text-h5">Web-To-Case</div>
+        <q-separator />
+        <div class="col-3 offset-3 q-pt-xl">
+          <web-to-case />
+        </div>
+        <div class="col-3 q-pt-xl">
+          <q-web-to-case />
+        </div>
+        <q-separator class="q-mt-xl" />
       </div>
       <div v-if="errored" class="row">
         <div class="col text-center text-negative">
@@ -146,7 +151,8 @@
 <script>
 export default {
   components: {
-    "web-to-case": require("../components/WebToCase.vue").default
+    "web-to-case": require("../components/WebToCase.vue").default,
+    "q-web-to-case": require("../components/QWebToCase.vue").default
   },
   data() {
     return {
