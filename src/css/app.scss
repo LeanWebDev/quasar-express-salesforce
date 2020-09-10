@@ -2,3 +2,31 @@
 .constrained {
   max-width: 960px;
 }
+body {
+  background: $light;
+}
+
+// .case-dialog {
+//   width: 100vw !important;
+//   max-width: 100vw !important;
+//   // max-height: calc(100vh - 70px) !important;
+// }
+// .case-dialog__inner > div {
+//   border-radius: 4px;
+// }
+
+// Fix full-size select options dialogs in large screens (only use full-size in mobile)
+body.screen--md,
+body.screen--lg,
+body.screen--xl {
+  .q-select__dialog {
+    width: 30vw !important;
+    max-width: 30vw !important;
+    max-height: calc(40vh - 70px) !important;
+  }
+  .case-dialog {
+    width: 50vw !important;
+    max-width: 80vw !important;
+    max-height: calc(90vh - 70px) !important;
+  }
+}

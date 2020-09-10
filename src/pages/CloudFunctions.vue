@@ -41,6 +41,40 @@
           />
         </q-card-section>
       </q-card>
+      <q-card class="col-6 offset-3 q-mt-lg">
+        <q-card-section>
+          <q-space />
+          <q-btn
+            color="grey"
+            label="Get accounts"
+            @click="getAccountsFunc"
+            flat
+            no-caps
+          />
+        </q-card-section>
+        <q-separator />
+        <q-card-section v-if="accounts" style="height: 300px">
+          No accounts yet
+        </q-card-section>
+        <q-scroll-area v-else style="height: 300px;">
+          <q-list>
+            <q-item
+              v-for="(account, index) in accounts"
+              :key="index"
+              clickable
+              v-ripple
+            >
+              <q-item-section caption>
+                <q-icon :label="account.Id" />
+              </q-item-section>
+              <q-item-section>{{ account.Name }}</q-item-section>
+            </q-item>
+          </q-list>
+        </q-scroll-area>
+        <q-inner-loading :showing="isLoadingAccounts">
+          <q-spinner-gears size="50px" color="primary" />
+        </q-inner-loading>
+      </q-card>
     </div>
   </q-page>
 </template>
@@ -59,7 +93,9 @@ export default {
         appId: process.env.LWD_APP_ID,
         measurementId: process.env.LWD_MEASUREMENT_ID
       },
-      text: null
+      text: null,
+      accounts: null,
+      isLoadingAccounts: false
     };
   },
   methods: {
@@ -98,6 +134,19 @@ export default {
         })
         .catch(error => {
           console.log(error);
+        });
+    },
+    getAccountsFunc() {
+      this.isLoadingAccounts = true;
+      this.$axios
+        .get(process.env.LWD_FUNC_GET_ACCOUNT_ALL_URL)
+        .then(response => {
+          this.accounts = response.data;
+          this.isLoadingAccounts = false;
+        })
+        .catch(error => {
+          console.log(error);
+          this.isLoadingAccounts = false;
         });
     }
   }

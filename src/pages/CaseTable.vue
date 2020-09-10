@@ -1,99 +1,126 @@
 <template>
-  <div class="row q-pt-xl">
-    <div class="col-6 offset-3">
-      <div id="section-cases">
-        <div class="row q-mb-md">
-          <div class="column">
-            <div class="col">
-              <div class="text-h5">
-                Cases <span class="text-subtitle2">({{ accountId }})</span>
+  <q-page padding>
+    <div class="row q-pt-xl">
+      <div class="col-12 col-md-6 offset-md-3">
+        <div id="section-cases">
+          <div class="row q-mb-md">
+            <div class="column">
+              <q-space />
+              <div class="text-weight-regular" style="font-size: 25px">
+                Support
               </div>
-              <div class="text-subtitle1">
-                Manage your cases
-              </div>
+              <!-- <div class="text-subtitle1">View your account details</div> -->
+            </div>
+            <q-space />
+            <div class="column justify-end">
+              <q-space />
+              <q-btn
+                @click="getCases"
+                class="q-mt-lg"
+                color="primary"
+                icon="autorenew"
+                size="12px"
+                flat
+                round
+              />
             </div>
           </div>
-          <q-space />
-          <div class="column justify-end">
-            <q-space />
-            <q-btn
+          <!-- <q-separator spaced /> -->
+          <q-card class="q-mb-md section-card" flat bordered>
+            <q-table
+              :dense="$q.screen.gt.md"
+              :data="cases"
+              :columns="columns"
+              row-key="Subject"
               color="primary"
-              label="New Case"
-              @click="showCreateCase = true"
-              class="q-mb-xs"
-              no-caps
-              unelevated
-            />
-          </div>
-        </div>
-        <!-- <q-separator spaced /> -->
-        <q-card class="q-mb-md section-card" flat bordered>
-          <q-table
-            :dense="$q.screen.lt.md"
-            :data="cases"
-            :columns="columns"
-            row-key="Subject"
-            color="primary"
-            :loading="isLoading"
-            title="(Account Name)"
-            no-data-label="No cases found for this account."
-            style="min-height: 230px"
-          >
-            <template v-slot:top>
-              <q-dialog v-model="showViewCase" v-if="!maximized">
-                <q-card style="width: 70vw">
-                  <div class="row">
-                    <div class="col">
-                      <q-card-section>
-                        <div class="text-h6">{{ updateCaseForm.Subject }}</div>
-                      </q-card-section>
-                      <q-separator inset />
-                      <q-card-section>
-                        <div class="row q-col-gutter-md q-mb-md">
-                          <q-input
-                            v-model="updateCaseForm.Subject"
-                            class="col"
-                            label="Subject"
-                            outlined
-                            dense
-                          ></q-input>
-                          <q-select
-                            :options="caseTypes"
-                            v-model="updateCaseForm.Type"
-                            class="col"
-                            label="Type"
-                            outlined
-                            dense
-                          ></q-select>
-                        </div>
-                        <div class="row q-mb-md">
-                          <q-input
-                            v-model="updateCaseForm.Description"
-                            type="textarea"
-                            class="col"
-                            label="Description"
-                            outlined
-                            dense
-                          ></q-input>
-                        </div>
-                      </q-card-section>
-                      <q-card-actions align="right">
-                        <!-- <a
+              :loading="isLoading"
+              title="Cases"
+              no-data-label="No cases found for this account."
+              style="min-height: 230px"
+            >
+              <template v-slot:top-right>
+                <q-btn
+                  color="primary"
+                  label="New Case"
+                  @click="showCreateCase = true"
+                  class="q-mb-xs"
+                  no-caps
+                  unelevated
+                />
+                <q-dialog
+                  v-model="showViewCase"
+                  :full-width="$q.screen.lt.md"
+                  full-height
+                >
+                  <q-card class="case-dialog">
+                    <div class="row">
+                      <div class="col-12">
+                        <q-card-section>
+                          <div class="row text-h5 q-mb-sm">
+                            {{ updateCaseForm.Subject }}
+                          </div>
+                          <div class="row text-caption text-grey q-mb-sm">
+                            Description
+                          </div>
+                          <div class="row text-body1 ">
+                            "{{ updateCaseForm.Description }}"
+                          </div>
+                          <!-- <div class="row q-col-gutter-md q-mb-md">
+                            <q-input
+                              v-model="updateCaseForm.Subject"
+                              class="col"
+                              label="Subject"
+                              outlined
+                              dense
+                            ></q-input>
+                            <q-select
+                              :options="caseTypes"
+                              v-model="updateCaseForm.Type"
+                              class="col"
+                              label="Type"
+                              outlined
+                              dense
+                            ></q-select>
+                          </div> -->
+                          <!-- <div class="row q-mb-md">
+                            <q-input
+                              v-model="updateCaseForm.Description"
+                              type="textarea"
+                              class="col"
+                              label="Description"
+                              disable
+                              readonly
+                              outlined
+                              dense
+                            ></q-input>
+                          </div> -->
+                        </q-card-section>
+                      </div>
+                      <q-separator spaced inset />
+                      <div class="col-12 q-pa-md">
+                        <!-- TODO: (Flex) Make the timeline a responsive height to accomodate the left over space but not make the dialog scroll -->
+                        <q-card bordered flat>
+                          <q-scroll-area style="height: 280px">
+                            <case-timeline :activity="caseEmailMessages" />
+                          </q-scroll-area>
+                          <q-separator />
+                          <q-card-actions align="right">
+                            <!-- <a
                           href="mailto:hello@john.cpm"
                           class="btn"
                           v-close-popup
                           >Send EmailMessage</a
                         > -->
-                        <q-btn
-                          type="a"
-                          href="mailto:hello@john.cpm"
-                          label="Send EmailMessage"
-                          color="grey"
-                          v-close-popup
-                          no-caps
-                          unelevated
-                        ></q-btn>
-                        <!-- <q-btn
+                            <q-btn
+                              type="a"
+                              href="mailto:hello@john.cpm"
+                              label="Send EmailMessage"
+                              color="grey"
+                              v-close-popup
+                              no-caps
+                              unelevated
+                            ></q-btn>
+                            <!-- <q-btn
                           @click="onSubmitUpdateCaseForm"
                           label="Confirm"
                           color="primary"
@@ -101,219 +128,171 @@
                           no-caps
                           unelevated
                         ></q-btn> -->
-                      </q-card-actions>
+                          </q-card-actions>
+                        </q-card>
+                      </div>
                     </div>
-                    <q-separator spaced vertical />
-                    <div class="col">
-                      <q-scroll-area style="height: 100%">
-                        <case-timeline :activity="emailMessages" />
-                      </q-scroll-area>
-                    </div>
-                  </div>
-                </q-card>
-              </q-dialog>
-              <q-dialog v-model="showViewCase" maximized v-if="maximized">
-                <q-card>
-                  <div class="row">
-                    <div class="col-12">
-                      <q-card-section>
-                        <div class="row">
-                          <div class="col">
-                            <div class="text-h6">
-                              {{ updateCaseForm.Subject }}
-                            </div>
-                          </div>
-                          <q-space />
-                          <div class="col">
-                            <q-btn
-                              label="Close"
-                              color="primary"
-                              class="float-right"
-                              v-close-popup
-                              no-caps
-                              unelevated
-                            ></q-btn>
-                          </div>
-                        </div>
-                      </q-card-section>
-                      <q-separator inset />
-                      <q-card-section>
-                        <div class="row q-col-gutter-md q-mb-md">
-                          <q-input
-                            v-model="updateCaseForm.Subject"
-                            class="col"
-                            label="Subject"
-                            outlined
-                            dense
-                          ></q-input>
-                          <q-select
-                            :options="caseTypes"
-                            v-model="updateCaseForm.Type"
-                            class="col"
-                            label="Type"
-                            outlined
-                            dense
-                          ></q-select>
-                        </div>
-                        <div class="row q-mb-md">
-                          <q-input
-                            v-model="updateCaseForm.Description"
-                            type="textarea"
-                            class="col"
-                            label="Description"
-                            outlined
-                            dense
-                          ></q-input>
-                        </div>
-                      </q-card-section>
-                      <q-card-actions align="right">
-                        <!-- <a
+                  </q-card>
+                </q-dialog>
+              </template>
+
+              <template v-slot:header="props">
+                <q-tr :props="props">
+                  <q-th
+                    v-for="col in props.cols"
+                    :key="col.name"
+                    :props="props"
+                  >
+                    {{ col.label }}
+                  </q-th>
+                </q-tr>
+              </template>
+              <template v-slot:body="props">
+                <q-tr
+                  :props="props"
+                  @click="viewCase(props.row)"
+                  class="cursor-pointer"
+                >
+                  <q-td key="Subject" :props="props">{{
+                    props.row.Subject
+                  }}</q-td>
+                  <q-td key="Status" :props="props" class="text-capitalize">
+                    <q-badge v-if="!props.row.ClosedDate" color="positive">
+                      Open
+                    </q-badge>
+                    <q-badge v-if="props.row.ClosedDate" color="grey">
+                      Closed
+                    </q-badge>
+                  </q-td>
+                  <!-- <q-td key="Description" :props="props">{{
+                  props.row.Description
+                }}</q-td> -->
+                  <q-td key="Type" :props="props">{{ props.row.Type }}</q-td>
+                  <q-td key="Reason" :props="props">{{
+                    props.row.Reason
+                  }}</q-td>
+                  <q-td key="CreatedDate" :props="props">{{
+                    props.row.CreatedDate | niceDate
+                  }}</q-td>
+                  <q-td key="ClosedDate" :props="props">{{
+                    props.row.ClosedDate | niceDate
+                  }}</q-td>
+                </q-tr>
+              </template>
+            </q-table>
+            <q-inner-loading :showing="isLoading">
+              <q-spinner-tail size="40px" color="transparent" />
+            </q-inner-loading>
+          </q-card>
+          <!-- <skeleton-table v-if="isLoading" /> -->
+        </div>
+      </div>
+    </div>
+    <!-- :maximized="$q.screen.lt.md" -->
+    <q-dialog
+      v-model="showCreateCase"
+      :full-width="$q.screen.lt.md"
+      :full-height="$q.screen.lt.md"
+    >
+      <q-card class="case-dialog">
+        <div class="row">
+          <div class="col">
+            <q-card-section>
+              <div class="text-h6">
+                Add a new case
+                <q-btn
+                  class="float-right"
+                  color="primary"
+                  label="Close"
+                  v-close-popup
+                  flat
+                  no-caps
+                />
+              </div>
+            </q-card-section>
+            <q-separator inset />
+            <q-card-section>
+              <div class="row q-col-gutter-md q-mb-md">
+                <q-input v-model="createCaseForm.accountId" class="hidden" />
+                <q-input
+                  v-model="createCaseForm.Subject"
+                  label="Subject"
+                  hint="Subject for this case"
+                  :rules="[
+                    val =>
+                      (val && val.length < 100) ||
+                      'Please type something with up to 100 characters'
+                  ]"
+                  maxlength="100"
+                  counter
+                  lazy-rules
+                  outlined
+                  dense
+                />
+                <q-select
+                  v-model="createCaseForm.Reason"
+                  :options="createCaseFormReasonOptions"
+                  label="Reason"
+                  outlined
+                  dense
+                  emit-value
+                />
+                <q-select
+                  v-model="createCaseForm.Type"
+                  :options="createCaseFormTypeOptions"
+                  label="Type"
+                  outlined
+                  dense
+                  emit-value
+                />
+              </div>
+              <div class="row q-mb-md">
+                <q-input
+                  v-model="createCaseForm.Description"
+                  type="textarea"
+                  label="Description"
+                  hint="Description for this case"
+                  lazy-rules
+                  :rules="[
+                    val =>
+                      (val && val.length < 800) ||
+                      'Please type something with up to 800 characters'
+                  ]"
+                  maxlength="800"
+                  counter
+                  outlined
+                  dense
+                />
+              </div>
+            </q-card-section>
+            <q-card-actions align="right">
+              <!-- <a
                           href="mailto:hello@john.cpm"
                           class="btn"
                           v-close-popup
                           >Send EmailMessage</a
                         > -->
-                        <q-btn
-                          type="a"
-                          href="mailto:hello@john.cpm"
-                          label="Send EmailMessage"
-                          color="grey"
-                          v-close-popup
-                          no-caps
-                          unelevated
-                        ></q-btn>
-                      </q-card-actions>
-                    </div>
-                    <div class="col-12">
-                      <q-scroll-area style="height: 500px">
-                        <case-timeline :activity="emailMessages" />
-                      </q-scroll-area>
-                    </div>
-                  </div>
-                </q-card>
-              </q-dialog>
-            </template>
-            <template v-slot:top-right> </template>
-            <template v-slot:header="props">
-              <q-tr :props="props">
-                <q-th v-for="col in props.cols" :key="col.name" :props="props">
-                  {{ col.label }}
-                </q-th>
-              </q-tr>
-            </template>
-            <template v-slot:body="props">
-              <q-tr
-                :props="props"
-                @click="viewCase(props.row)"
-                class="cursor-pointer"
-              >
-                <q-td key="Subject" :props="props">{{
-                  props.row.Subject
-                }}</q-td>
-                <q-td key="Status" :props="props" class="text-capitalize">
-                  <q-badge v-if="!props.row.ClosedDate" color="positive">
-                    Open
-                  </q-badge>
-                  <q-badge v-if="props.row.ClosedDate" color="grey">
-                    Closed
-                  </q-badge>
-                </q-td>
-                <!-- <q-td key="Description" :props="props">{{
-                  props.row.Description
-                }}</q-td> -->
-                <q-td key="Type" :props="props">{{ props.row.Type }}</q-td>
-                <q-td key="Reason" :props="props">{{ props.row.Reason }}</q-td>
-                <q-td key="CreatedDate" :props="props">{{
-                  props.row.CreatedDate | niceDate
-                }}</q-td>
-                <q-td key="ClosedDate" :props="props">{{
-                  props.row.ClosedDate | niceDate
-                }}</q-td>
-              </q-tr>
-            </template>
-          </q-table>
-          <q-inner-loading :showing="isLoading">
-            <q-spinner-tail size="40px" color="primary" />
-          </q-inner-loading>
-        </q-card>
-        <!-- <skeleton-table v-if="isLoading" /> -->
-      </div>
-    </div>
-    <q-dialog v-model="showCreateCase">
-      <q-card class="col-12 q-pa-md" style="width: 400px">
-        <q-card-section class="text-h6">
-          Add a new case
-        </q-card-section>
-        <q-separator />
-        <q-card-section>
-          <q-form
-            @submit="onSubmitCreateCaseForm"
-            @reset="onResetCreateCaseForm"
-            class="q-gutter-md"
-          >
-            <q-input v-model="createCaseForm.accountId" class="hidden" />
-            <q-input
-              v-model="createCaseForm.Subject"
-              label="Subject"
-              hint="Subject for this case"
-              :rules="[
-                val =>
-                  (val && val.length < 100) ||
-                  'Please type something with up to 100 characters'
-              ]"
-              maxlength="100"
-              counter
-              lazy-rules
-              outlined
-              dense
-            />
-            <q-select
-              v-model="createCaseForm.Reason"
-              :options="createCaseFormReasonOptions"
-              label="Reason"
-              outlined
-              dense
-              emit-value
-            />
-            <q-select
-              v-model="createCaseForm.Type"
-              :options="createCaseFormTypeOptions"
-              label="Type"
-              outlined
-              dense
-              emit-value
-            />
-            <q-input
-              v-model="createCaseForm.Description"
-              type="textarea"
-              label="Description"
-              hint="Description for this case"
-              lazy-rules
-              :rules="[
-                val =>
-                  (val && val.length < 800) ||
-                  'Please type something with up to 800 characters'
-              ]"
-              maxlength="800"
-              counter
-              outlined
-              dense
-            />
-            <div>
-              <q-btn label="Submit" type="submit" color="primary" />
               <q-btn
+                @click="onResetCreateCaseForm"
                 label="Reset"
-                type="reset"
                 color="primary"
+                no-caps
                 flat
-                class="q-ml-sm"
               />
-            </div>
-          </q-form>
-        </q-card-section>
+              <q-btn
+                @click="onSubmitCreateCaseForm"
+                label="Confirm"
+                color="primary"
+                v-close-popup
+                no-caps
+                unelevated
+              />
+            </q-card-actions>
+          </div>
+        </div>
       </q-card>
     </q-dialog>
-  </div>
+  </q-page>
 </template>
 
 <script>
@@ -330,7 +309,7 @@ export default {
       maximized: false,
       isLoading: false,
       cases: [],
-      emailMessages: [],
+      caseEmailMessages: [],
       errored: false,
       showCreateCase: false,
       showViewCase: false,
@@ -473,7 +452,7 @@ export default {
     },
     viewCase(item) {
       console.log(item);
-      this.getEmailMessages(item.Id);
+      this.getCaseEmailMessages(item.Id);
       this.updateCaseForm = Object.assign({}, item);
       this.showViewCase = true;
     },
@@ -530,13 +509,13 @@ export default {
       this.createCaseForm.Type = null;
       this.createCaseForm.Description = null;
     },
-    getEmailMessages(parentId) {
+    getCaseEmailMessages(parentId) {
       console.log(parentId);
       this.isLoading = true;
       this.$axios
         .get("http://localhost:3000/email-message/related/" + parentId)
         .then(response => {
-          this.emailMessages = response.data;
+          this.caseEmailMessages = response.data;
           this.isLoading = false;
         })
         .catch(error => {
