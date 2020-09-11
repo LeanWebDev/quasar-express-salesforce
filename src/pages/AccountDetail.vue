@@ -50,9 +50,9 @@
           <q-form @submit.prevent="onSubmitAccountFormUpdate">
             <q-card-section>
               <div class="row">
-                <div class="col q-gutter-md">
+                <div class="col">
                   <div class="row">
-                    <div class="col-9 q-gutter-md">
+                    <div class="col-12 col-sm-9 q-gutter-y-md">
                       <q-input
                         v-model="account.website"
                         type="text"
@@ -94,7 +94,7 @@
                 </div>
               </div>
             </q-card-section>
-            <q-card-section>
+            <!-- <q-card-section>
               <div class="row">
                 <div class="col">
                   <q-btn
@@ -109,7 +109,7 @@
                   >
                 </div>
               </div>
-            </q-card-section>
+            </q-card-section> -->
           </q-form>
           <q-inner-loading :showing="isLoading.accountDetails">
             <q-spinner-tail size="50px" color="primary" />
@@ -158,25 +158,25 @@
           <q-tab-panels v-model="addressTab" animated>
             <q-tab-panel name="shipping">
               <div class="row">
-                <div class="col-12 col-md-9 q-gutter-y-md">
+                <div class="col-12 col-sm-9 q-gutter-y-md">
                   <q-input
                     v-model="shippingAddress.street"
                     type="text"
-                    label="Street"
+                    label="Street address"
                     outlined
                     dense
                   />
                   <q-input
                     v-model="shippingAddress.city"
                     type="text"
-                    label="City"
+                    label="Town/City"
                     outlined
                     dense
                   />
                   <q-input
                     v-model="shippingAddress.state"
                     type="text"
-                    label="State"
+                    label="County"
                     outlined
                     dense
                   />
@@ -220,25 +220,25 @@
 
             <q-tab-panel name="billing">
               <div class="row">
-                <div class="col-12 col-md-9 q-gutter-y-md">
+                <div class="col-12 col-sm-9 q-gutter-y-md">
                   <q-input
                     v-model="billingAddress.street"
                     type="text"
-                    label="Street"
+                    label="Street address"
                     outlined
                     dense
                   />
                   <q-input
                     v-model="billingAddress.city"
                     type="text"
-                    label="City"
+                    label="Town/City"
                     outlined
                     dense
                   />
                   <q-input
                     v-model="billingAddress.state"
                     type="text"
-                    label="State"
+                    label="County"
                     outlined
                     dense
                   />
@@ -308,47 +308,47 @@
           </div>
         </div>
         <q-card class="col-12 q-mb-md" flat bordered>
-          <q-card-section>
-            <q-list class="rounded-borders" bordered separator>
-              <q-item v-ripple>
-                <q-item-section avatar>
-                  <q-avatar rounded>
-                    <img :src="accountManager.FullPhotoUrl" />
-                  </q-avatar>
-                </q-item-section>
-                <q-item-section class="text-weight-medium">
-                  {{ accountManager.Name }}
-                  <!-- <q-item-label caption>
+          <!-- <q-card-section> -->
+          <q-list class="rounded-borders" bordered separator>
+            <q-item v-ripple>
+              <q-item-section avatar>
+                <q-avatar rounded>
+                  <img :src="accountManager.FullPhotoUrl" />
+                </q-avatar>
+              </q-item-section>
+              <q-item-section class="text-weight-medium">
+                {{ accountManager.Name }}
+                <!-- <q-item-label caption>
                     Name
                   </q-item-label> -->
-                </q-item-section>
-              </q-item>
-              <q-item v-ripple>
-                <q-item-section>
-                  {{ accountManager.Email }}
-                  <q-item-label caption>
-                    Email
-                  </q-item-label>
-                </q-item-section>
-              </q-item>
-              <q-item v-ripple>
-                <q-item-section>
-                  {{ accountManager.Department }}
-                  <q-item-label caption>
-                    Department
-                  </q-item-label>
-                </q-item-section>
-              </q-item>
-              <q-item v-ripple>
-                <q-item-section>
-                  {{ accountManager.Phone }}
-                  <q-item-label caption>
-                    Phone number
-                  </q-item-label>
-                </q-item-section>
-              </q-item>
-            </q-list>
-            <!-- <div class="row">
+              </q-item-section>
+            </q-item>
+            <q-item v-ripple>
+              <q-item-section>
+                {{ accountManager.Email }}
+                <q-item-label caption>
+                  Email
+                </q-item-label>
+              </q-item-section>
+            </q-item>
+            <q-item v-ripple>
+              <q-item-section>
+                {{ accountManager.Department }}
+                <q-item-label caption>
+                  Department
+                </q-item-label>
+              </q-item-section>
+            </q-item>
+            <q-item v-ripple>
+              <q-item-section>
+                {{ accountManager.Phone }}
+                <q-item-label caption>
+                  Phone number
+                </q-item-label>
+              </q-item-section>
+            </q-item>
+          </q-list>
+          <!-- <div class="row">
               <div class="col q-gutter-md">
                 {{ accountManager.FullPhotoUrl }}
                 <q-avatar size="60px" font-size="52px" rounded>
@@ -364,14 +364,87 @@
                 </div>
               </div>
             </div> -->
-          </q-card-section>
+          <!-- </q-card-section> -->
 
           <q-inner-loading :showing="isLoading.accountManager">
             <q-spinner-tail size="50px" color="primary" />
           </q-inner-loading>
         </q-card>
-
         <!-- <account-manager v-if="account.OwnerId" :ownerId="account.OwnerId" /> -->
+
+        <cases-table />
+
+        <div class="row q-mb-md">
+          <div class="column">
+            <q-space />
+            <div class="text-weight-regular" style="font-size: 25px">
+              Contracts
+            </div>
+            <!-- <div class="text-subtitle1">View your account details</div> -->
+          </div>
+          <q-space />
+          <div class="column justify-end">
+            <q-space />
+            <q-btn
+              class="q-mt-lg"
+              color="primary"
+              icon="autorenew"
+              size="12px"
+              flat
+              round
+            />
+          </div>
+        </div>
+        <q-card class="col-12 q-mb-md" flat bordered>
+          <!-- <q-card-section> -->
+          <q-list class="rounded-borders" bordered separator>
+            <q-item v-for="i in 3" :key="i" v-ripple>
+              <q-item-section>
+                <!-- <q-item-label header>Contract product name</q-item-label> -->
+                <q-item-label overline>#00000149</q-item-label>
+                <q-linear-progress
+                  rounded
+                  size="lg"
+                  :value="contractProgress1"
+                  color="primary"
+                  track-color="primary"
+                  class="q-mt-sm"
+                />
+                <div class="row">
+                  <q-item-label class="col q-mt-sm float-right" caption>
+                    02/06/2019
+                  </q-item-label>
+                  <q-space />
+                  <q-item-label class="col q-mt-sm text-right" caption>
+                    02/06/2021
+                  </q-item-label>
+                </div>
+              </q-item-section>
+              <q-item-section side top>36 months</q-item-section>
+            </q-item>
+          </q-list>
+          <!-- <div class="row">
+              <div class="col q-gutter-md">
+                {{ accountManager.FullPhotoUrl }}
+                <q-avatar size="60px" font-size="52px" rounded>
+                  <q-img
+                    :src="accountManager.FullPhotoUrl"
+                    size="md"
+                    spinner-color="primary"
+                    spinner-size="82px"
+                  />
+                </q-avatar>
+                <div class="text-h6">
+                  {{ accountManager.Name }}
+                </div>
+              </div>
+            </div> -->
+          <!-- </q-card-section> -->
+
+          <q-inner-loading :showing="isLoading.accountManager">
+            <q-spinner-tail size="50px" color="primary" />
+          </q-inner-loading>
+        </q-card>
       </div>
     </div>
     <!-- <pre>{{ account }}</pre> -->
@@ -385,6 +458,7 @@
 export default {
   components: {
     // "account-manager": require("components/AccountManager.vue").default
+    "cases-table": require("pages/CaseTable.vue").default
   },
   data() {
     return {
@@ -427,7 +501,9 @@ export default {
         country: null,
         latitude: null,
         longitude: null
-      }
+      },
+      contracts: [],
+      contractProgress1: 0.637
     };
   },
   methods: {

@@ -503,7 +503,8 @@ app.post("/case/new", function(req, res) {
   let reason = req.body.reason;
   let type = req.body.type;
   let description = req.body.description;
-  let params = [accountId, subject, reason, type, description];
+  let origin = "Atlas";
+  let params = [accountId, subject, reason, type, description, origin];
   console.log("Here are the params -->" + params);
   // Connection login setup
   conn.login(
@@ -524,7 +525,8 @@ app.post("/case/new", function(req, res) {
           Subject: subject,
           Reason: reason,
           Type: type,
-          Description: description
+          Description: description,
+          Origin: origin
         },
         function(err, ret) {
           if (err || !ret.success) {

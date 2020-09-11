@@ -15,6 +15,12 @@ body {
 //   border-radius: 4px;
 // }
 
+.create-case-dialog {
+  width: 40vw !important;
+  max-width: 40vw !important;
+  max-height: calc(90vh - 70px) !important;
+}
+
 // Fix full-size select options dialogs in large screens (only use full-size in mobile)
 body.screen--md,
 body.screen--lg,
@@ -26,7 +32,53 @@ body.screen--xl {
   }
   .case-dialog {
     width: 50vw !important;
-    max-width: 80vw !important;
+    max-width: 50vw !important;
+    max-height: calc(65vh - 70px) !important;
+  }
+
+  .case-scroll-area {
+    height: calc(50vh - 100px) !important;
+  }
+
+  // .create-case-dialog {
+  //   width: 20vw !important;
+  //   max-width: 20vw !important;
+  //   max-height: calc(90vh - 70px) !important;
+  // }
+}
+
+body.screen--md {
+  .case-dialog {
+    width: 60vw !important;
+    max-width: 60vw !important;
+    max-height: calc(80vh - 70px) !important;
+  }
+  .case-scroll-area {
+    height: calc(70vh - 100px) !important;
+  }
+}
+
+body.screen--lg,
+body.screen--xl {
+  .create-case-dialog {
+    width: 20vw !important;
+    max-width: 20vw !important;
     max-height: calc(90vh - 70px) !important;
   }
 }
+
+// .q-scrollarea__thumb {
+//   right: 4px;
+//   border-radius: 5px;
+//   background: $primary;
+//   width: 5px;
+//   opacity: 0.75;
+// }
+
+// .q-scrollarea__bar {
+//   right: 2px;
+//   border-radius: 9px;
+//   background: $primary;
+//   width: 10px;
+//   opacity: 0.2;
+// }
