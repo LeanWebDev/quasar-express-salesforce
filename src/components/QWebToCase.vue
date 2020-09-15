@@ -6,17 +6,15 @@
     <!--  character set of your HTML page.                                        -->
     <!--  ----------------------------------------------------------------------  -->
 
-    <meta HTTP-EQUIV="Content-type" CONTENT="text/html; charset=UTF-8" />
+    <!-- <meta HTTP-EQUIV="Content-type" CONTENT="text/html; charset=UTF-8" /> -->
 
     <!--  ----------------------------------------------------------------------  -->
     <!--  NOTE: Please add the following <FORM> element to your page.             -->
     <!--  ----------------------------------------------------------------------  -->
 
-    <q-form
-      action="https://webto.salesforce.com/servlet/servlet.WebToCase?encoding=UTF-8"
-      method="POST"
-      class="q-gutter-md"
-    >
+    <!-- action="https://webto.salesforce.com/servlet/servlet.WebToCase?encoding=UTF-8"
+      method="POST" -->
+    <q-form @submit="createWebToCase" class="q-gutter-md">
       <q-input
         type="hidden"
         name="orgid"
@@ -237,6 +235,26 @@ export default {
         .catch(error => {
           console.log(error);
           this.errored = true;
+        });
+    },
+    createWebToCase() {
+      let axiosWebToCaseConfig = {
+        headers: {
+          "Content-Type": "text/html;charset=UTF-8",
+          "Access-Control-Allow-Origin": "*"
+        }
+      };
+      this.$axios
+        .post(
+          "https://webto.salesforce.com/servlet/servlet.WebToCase?encoding=UTF-8",
+          this.webToCaseForm,
+          axiosWebToCaseConfig
+        )
+        .then(res => {
+          console.log("RESPONSE RECEIVED: ", res);
+        })
+        .catch(err => {
+          console.log("AXIOS ERROR: ", err);
         });
     }
   },

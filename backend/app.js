@@ -3,7 +3,9 @@ const express = require("express");
 const jsforce = require("jsforce");
 const path = require("path");
 const bodyParser = require("body-parser");
-const conn = new jsforce.Connection();
+const conn = new jsforce.Connection({
+  loginUrl: "https://optimityuk--partial.my.salesforce.com/"
+});
 const cors = require("cors");
 const dotenv = require("dotenv");
 

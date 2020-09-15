@@ -7,8 +7,8 @@
       <div class="col-3">
         <q-btn
           color="primary"
-          label="Switch to Opti"
-          :to="'/opti-account/' + accountId"
+          label="Switch to Normal"
+          :to="'/account/' + accountId"
           outline
         />
       </div>
@@ -16,7 +16,7 @@
         <q-btn color="blue" glossy rounded>Atlas Enabled</q-btn>
       </div>
       <div class="col-12 text-center text-h3">
-        <q-btn color="purple-4" glossy rounded>Normal Account detail</q-btn>
+        <q-btn color="purple-4" glossy rounded>Opti Account detail</q-btn>
       </div>
     </div>
 
@@ -475,14 +475,14 @@
           <div class="column">
             <q-space />
             <div class="text-weight-regular" style="font-size: 25px">
-              Contracts
+              Subscriptions
             </div>
-            <!-- <div class="text-subtitle1">View your account details</div> -->
           </div>
           <q-space />
           <div class="column justify-end">
             <q-space />
             <q-btn
+              @click="getSubscriptions"
               class="q-mt-lg"
               color="primary"
               icon="autorenew"
@@ -492,66 +492,83 @@
             />
           </div>
         </div>
-        <q-card class="col-12 q-mb-md" flat bordered>
-          <!-- <q-card-section> -->
-          <q-list class="rounded-borders" bordered separator>
-            <q-item v-for="i in 3" :key="i" v-ripple>
+        <q-card class="col-12 q-mb-md" style="min-height: 250px" flat bordered>
+          <q-list
+            v-if="subscriptions[0]"
+            class="rounded-borders"
+            bordered
+            separator
+          >
+            <q-item v-for="(sub, index) in subscriptions" :key="index" v-ripple>
               <q-item-section>
-                <!-- <q-item-label header>Contract product name</q-item-label> -->
-                <q-item-label overline>#00000149</q-item-label>
+                <q-item-label class="q-pl-none q-pb-none q-pt-none" overline>{{
+                  sub.Name
+                }}</q-item-label>
+                <q-item-label
+                  class="q-pl-none q-pb-none q-pt-none text-h6"
+                  header
+                  >{{ sub.ProductDescription__c }}
+                  <q-badge
+                    class="q-ml-md q-pt-xs"
+                    color="grey"
+                    :label="sub.Product_Family__c"
+                /></q-item-label>
+                <q-item-label caption
+                  >Quantity: {{ sub.SBQQ__Quantity__c }}</q-item-label
+                >
                 <q-linear-progress
                   rounded
                   size="lg"
-                  :value="contractProgress1"
+                  :value="
+                    getSubProgress(sub.SBQQ__StartDate__c, sub.SBQQ__EndDate__c)
+                  "
                   color="primary"
                   track-color="primary"
                   class="q-mt-sm"
-                />
+                >
+                  <q-tooltip>
+                    X days
+                  </q-tooltip>
+                </q-linear-progress>
                 <div class="row">
                   <q-item-label class="col q-mt-sm float-right" caption>
-                    02/06/2019
+                    {{ sub.SBQQ__StartDate__c }}
                   </q-item-label>
                   <q-space />
                   <q-item-label class="col q-mt-sm text-right" caption>
-                    02/06/2021
+                    {{ sub.SBQQ__EndDate__c }}
                   </q-item-label>
                 </div>
               </q-item-section>
-              <q-item-section side top>36 months</q-item-section>
+              <q-item-section side top>
+                <div class="text-h6">£{{ sub.MRR__c }}</div>
+                per month
+              </q-item-section>
             </q-item>
           </q-list>
-          <!-- <div class="row">
-              <div class="col q-gutter-md">
-                {{ accountManager.FullPhotoUrl }}
-                <q-avatar size="60px" font-size="52px" rounded>
-                  <q-img
-                    :src="accountManager.FullPhotoUrl"
-                    size="md"
-                    spinner-color="primary"
-                    spinner-size="82px"
-                  />
-                </q-avatar>
-                <div class="text-h6">
-                  {{ accountManager.Name }}
-                </div>
+          <div
+            v-if="!subscriptions[0] && !isLoading.subscriptions"
+            class="text-subtitle text-center"
+            style="margin-top: 115px"
+          >
+            <div class="column q-col-gutter-sm">
+              <div class="col">
+                There are no subscriptions for your account.
               </div>
-            </div> -->
-          <!-- </q-card-section> -->
-
-          <q-inner-loading :showing="isLoading.accountManager">
+            </div>
+          </div>
+          <q-inner-loading :showing="isLoading.subscriptions">
             <q-spinner-tail size="50px" color="primary" />
           </q-inner-loading>
         </q-card>
       </div>
     </div>
-    <!-- <pre>{{ account }}</pre> -->
-    <!-- <q-inner-loading :showing="isLoading">
-      <q-spinner-ball size="50px" color="primary" />
-    </q-inner-loading> -->
   </q-page>
 </template>
 
 <script>
+import { date } from "quasar";
+
 export default {
   components: {
     // "account-manager": require("components/AccountManager.vue").default
@@ -564,7 +581,8 @@ export default {
         accountAddresses: false,
         accountAddressesSubmit: false,
         accountManager: false,
-        contactDetail: false
+        contactDetail: false,
+        subscriptions: false
       },
       isAddressCountriesLoading: false,
       addressTab: "billing",
@@ -600,7 +618,7 @@ export default {
         latitude: null,
         longitude: null
       },
-      contracts: [],
+      subscriptions: [],
       contractProgress1: 0.637,
       contactId: "0034K000001tvJnQAI",
       contact: {
@@ -825,6 +843,44 @@ export default {
           console.log(error);
           this.errored = true;
         });
+    },
+    getSubscriptions(accountId) {
+      this.isLoading.subscriptions = true;
+      this.$axios
+        .get("http://localhost:3000/subscription/related/" + this.accountId)
+        .then(response => {
+          this.subscriptions = response.data;
+          this.isLoading.subscriptions = false;
+          console.log(this.subscriptions);
+        })
+        .catch(error => {
+          console.log(error);
+          this.errored = true;
+          this.isLoading.subscriptions = false;
+        });
+    },
+    getSubProgress(start, end) {
+      console.log("This is the start: " + start);
+      let startStr = start.toString();
+      let startDate = startStr.replace(/-/g, ", ");
+      console.log("This is the NEW start: " + startDate);
+      let newStartDate = new Date(startDate);
+
+      console.log("This is the end: " + end);
+      let endStr = end.toString();
+      let endDate = endStr.replace(/-/g, ", ");
+      console.log("This is the NEW start: " + endDate);
+      let newEndDate = new Date(endDate);
+
+      let unit = "days";
+      let diffStartEnd = date.getDateDiff(endDate, startDate, unit);
+      console.log("Diff between start and end -> " + diffStartEnd);
+
+      let nowDate = new Date();
+      let diffNowStart = date.getDateDiff(nowDate, startDate, unit);
+      console.log("Diff between now and end ->" + diffNowStart);
+
+      return diffNowStart / diffStartEnd;
     }
   },
   mounted() {
@@ -833,6 +889,14 @@ export default {
     this.getAccountDetails(this.accountId);
     this.getAccountAddresses(this.accountId);
     // this.getContactDetail(this.contactId);
+    this.getSubscriptions(this.accountId);
+  },
+  filters: {
+    toLowercase: function(value) {
+      if (!value) return "";
+      value = value.toString();
+      return value.charAt(0).toLowerCase() + value.slice(1);
+    }
   }
 };
 </script>

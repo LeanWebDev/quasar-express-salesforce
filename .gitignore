@@ -2,6 +2,9 @@
 .thumbs.db
 node_modules
 
+# Prod
+/backend_optimity
+
 # Environment
 .env
 

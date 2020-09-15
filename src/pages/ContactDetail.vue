@@ -12,7 +12,7 @@
           <q-separator />
           <q-card-section>
             <div class="row">
-              <div class="col q-gutter-md">
+              <div class="col-12 col-sm-9 q-gutter-md">
                 <q-form
                   @submit.prevent="onSubmitContactFormUpdate"
                   class="q-gutter-md"

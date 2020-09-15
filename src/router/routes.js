@@ -9,6 +9,10 @@ const routes = [
         path: "/account/:accountId",
         component: () => import("pages/AccountDetail.vue")
       },
+      {
+        path: "/opti-account/:accountId",
+        component: () => import("pages/OptiAccountDetail.vue")
+      },
       { path: "/contact", component: () => import("pages/Contact.vue") },
       {
         path: "/contact/:contactId",

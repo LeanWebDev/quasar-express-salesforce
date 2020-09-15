@@ -15,7 +15,7 @@
             <div class="column justify-end">
               <q-space />
               <q-btn
-                @click="getCases"
+                @click="getRelatedCases(accountId)"
                 class="q-mt-lg"
                 color="primary"
                 icon="autorenew"
@@ -73,6 +73,9 @@
                           <div class="row text-h5 q-mb-sm">
                             {{ updateCaseForm.Subject }}
                           </div>
+                          <span class="row text-subtitle">
+                            {{ updateCaseForm.CreatedDate | niceDate }}
+                          </span>
                           <div class="row text-caption text-grey">
                             Description
                           </div>
@@ -132,26 +135,26 @@
                               <q-btn
                                 @click="updateExpanded = true"
                                 label="Send Update"
-                                color="grey"
+                                color="primary"
                                 no-caps
                                 unelevated
                               />
-                              <q-btn @click="scrollBackToTop"
-                                >Back to top</q-btn
-                              >
                             </q-card-actions>
                           </q-card>
-                          <q-card bordered flat style="margin-top: 8px">
+                          <q-card
+                            bordered
+                            flat
+                            style="margin-top: 8px; background: rgba(0,0,0,0.01)"
+                          >
                             <q-scroll-area
                               class="case-scroll-area"
                               ref="timelineScrollArea"
                               :thumb-style="thumbStyle"
-                              :content-style="contentStyle"
                               :content-active-style="contentActiveStyle"
                             >
                               <!-- <case-timeline :activity="caseEmailMessages" /> -->
                               <div class="q-px-lg q-pb-md">
-                                <q-timeline>
+                                <!-- <q-timeline>
                                   <div v-if="caseEmailMessages[0]">
                                     <q-timeline-entry
                                       v-for="(entry,
@@ -174,7 +177,27 @@
                                       side="left"
                                     />
                                   </div>
-                                </q-timeline>
+                                </q-timeline> -->
+                                <div>
+                                  <q-timeline>
+                                    <q-timeline-entry
+                                      v-for="(entry,
+                                      index) in caseEmailMessages"
+                                      :key="index"
+                                      :title="entry.Subject"
+                                      :subtitle="entry.MessageDate"
+                                      side="left"
+                                    >
+                                      <template slot="subtitle">
+                                        {{ entry.MessageDate | niceDate }}
+                                      </template>
+                                      <div>
+                                        {{ entry.TextBody }}
+                                      </div>
+                                    </q-timeline-entry>
+                                  </q-timeline>
+                                </div>
+
                                 <!-- <div v-if="!activity[0]" class="row" style="padding-top: 160px">
       <div class="col text-center">
         No email messages for this case yet.
@@ -196,6 +219,9 @@
                   persistent
                   transition-show="scale"
                   transition-hide="scale"
+                  @hide="
+                    getRelatedCaseEmailMessages(createEmailMessageForm.parentId)
+                  "
                 >
                   <q-card style="width: 500px">
                     <q-card-section>
@@ -345,7 +371,7 @@
         <q-separator inset />
         <q-card-section>
           <div class="row q-mb-md">
-            <q-input v-model="createCaseForm.accountId" class="hidden" />
+            <q-input v-model="accountId" class="hidden" />
             <q-input
               class="col"
               v-model="createCaseForm.Subject"
@@ -454,6 +480,16 @@ export default {
       errorMessage: null,
       showCreateCase: false,
       showViewCase: false,
+      viewingCase: {
+        Id: null,
+        Subject: null,
+        Description: null,
+        Status: null,
+        Type: null,
+        Reason: null,
+        OpenedDate: null,
+        ClosedDate: null
+      },
       //   updatedIndex: -1,
       createCaseForm: {
         Subject: null,
@@ -464,15 +500,13 @@ export default {
         CreatedDate: Date.now(),
         ClosedDate: null
       },
-      createCaseFormReasonOptions: ["Reason1", "Reason2", "Reason3"],
-      createCaseFormTypeOptions: ["Type1", "Type2", "Type3"],
       updateCaseForm: {
         Subject: null,
         Description: null,
         Status: null,
         Type: null,
         Reason: null,
-        CreatedDate: Date.now(),
+        CreatedDate: null,
         ClosedDate: null
       },
       createEmailMessageForm: {
@@ -489,15 +523,17 @@ export default {
         backgroundColor: "rgba(0,0,0,0.04)",
         color: "black"
       },
-
       thumbStyle: {
         right: "2px",
         borderRadius: "5px",
-        backgroundColor: "#027be3",
+        backgroundColor: "#2b89c0",
         width: "5px",
         opacity: 0.75
       },
       caseTypes: ["Hardware", "Network", "WiFi", "Software", "Voice"],
+      createCaseFormReasonOptions: [],
+      createCaseFormTypeOptions: [],
+      caseTimeline: [],
       columns: [
         {
           name: "Subject",
@@ -601,6 +637,35 @@ export default {
           }
         });
     },
+    getRelatedCases(accountId) {
+      this.isLoading = true;
+      this.$axios
+        .get("http://localhost:3000/case/related/" + accountId, {
+          timeout: 10000
+        })
+        .then(response => {
+          this.cases = response.data;
+          console.log(this.cases);
+          // this.cases = []
+          this.isLoading = false;
+        })
+        .catch(error => {
+          console.log(error.code);
+          console.log(error.message);
+          console.log(error.stack);
+          if (error.response) {
+            this.isLoading = false;
+            return (this.errorMessage = error.response);
+          } else if (error.code == "ECONNABORTED") {
+            this.isLoading = false;
+            return (this.errorMessage = "A network error has occurred");
+          } else {
+            console.log(error);
+            this.errored = true;
+            this.isLoading = false;
+          }
+        });
+    },
     getCreateCaseFormReasonOptions() {
       this.$axios
         .get("http://localhost:3000/case/describe/reason")
@@ -633,9 +698,10 @@ export default {
     },
     viewCase(item) {
       console.log(item);
-      this.getCaseEmailMessages(item.Id);
+      this.getRelatedCaseEmailMessages(item.Id);
       console.log("THIS IS THE ITEM ID YOU LOOKING FOR --> " + item.Id);
       this.createEmailMessageForm.parentId = item.Id;
+      this.viewingCase.OpenedDate = item.CreatedDate;
       console.log(
         "NOW CHECK IT HERE -> " + this.createEmailMessageForm.parentId
       );
@@ -657,11 +723,12 @@ export default {
       this.updateCaseForm.Reason = null;
       this.updateCaseForm.Type = null;
       this.updateCaseForm.Description = null;
+      this.updateCaseForm.CreatedDate = null;
     },
     onSubmitCreateCaseForm() {
       this.$axios
         .post("http://localhost:3000/case/new", {
-          accountId: this.createCaseForm.accountId,
+          accountId: this.accountId,
           subject: this.createCaseForm.Subject,
           reason: this.createCaseForm.Reason,
           type: this.createCaseForm.Type,
@@ -696,7 +763,7 @@ export default {
       this.createCaseForm.Type = null;
       this.createCaseForm.Description = null;
     },
-    getCaseEmailMessages(parentId) {
+    getRelatedCaseEmailMessages(parentId) {
       this.isLoadingTimeline = true;
 
       console.log(parentId);
@@ -705,6 +772,11 @@ export default {
         .get("http://localhost:3000/email-message/related/" + parentId)
         .then(response => {
           this.caseEmailMessages = response.data;
+          this.caseEmailMessages.push({
+            Subject: "Case opened",
+            TextBody: null,
+            MessageDate: this.viewingCase.OpenedDate
+          });
           this.isLoading = false;
           this.isLoadingTimeline = false;
         })
@@ -715,6 +787,11 @@ export default {
           this.isLoadingTimeline = false;
         });
       this.isLoading = true;
+    },
+    getCaseTimeline(parentId) {
+      this.getRelatedCaseEmailMessages(parentId);
+      let c = this.caseEmailMessages;
+      let openedDate;
     },
     getNow() {
       // const today = new Date();
@@ -753,7 +830,7 @@ export default {
             message: "Submitted"
           });
           this.showCreateEmailMessage = false;
-          this.getCaseEmailMessages(createEmailMessageForm.parentId);
+          this.getRelatedCaseEmailMessages(createEmailMessageForm.parentId);
           this.onResetEmailMessageForm();
           // this.getCaseDetail(this.caseObjectId);
         })
@@ -771,7 +848,9 @@ export default {
     }
   },
   mounted() {
+    this.accountId = this.$route.params.accountId;
     this.getCases();
+    this.getRelatedCases(this.accountId);
     this.getCreateCaseFormReasonOptions();
     this.getCreateCaseFormTypeOptions();
   },
