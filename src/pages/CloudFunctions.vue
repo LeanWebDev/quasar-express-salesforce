@@ -23,6 +23,78 @@
         </q-card-section>
       </q-card>
       <q-card class="col-6 offset-3 q-mt-lg">
+        <q-card-section>
+          <div class="text-h6">getAccountsCallable</div>
+        </q-card-section>
+        <q-card-section class="q-gutter-md">
+          <q-btn
+            color="primary"
+            label="Call"
+            @click="getAccountsCallable"
+            no-caps
+            unelevated
+          />
+        </q-card-section>
+        <q-card-section>
+          <q-scroll-area style="height: 300px;">
+            <q-list bordered rounded>
+              <q-item
+                v-for="(account, index) in accounts"
+                :key="index"
+                clickable
+                v-ripple
+              >
+                <q-item-section
+                  >{{ account.Name }}
+                  <q-item-label caption>
+                    {{ account.Id }}
+                  </q-item-label>
+                </q-item-section>
+              </q-item>
+            </q-list>
+          </q-scroll-area>
+        </q-card-section>
+        <q-inner-loading :showing="isLoadingAccounts">
+          <q-spinner-gears size="50px" color="primary" />
+        </q-inner-loading>
+      </q-card>
+      <q-card class="col-6 offset-3 q-mt-lg">
+        <q-card-section>
+          <div class="text-h6">getCasesCallable</div>
+        </q-card-section>
+        <q-card-section class="q-gutter-md">
+          <q-btn
+            color="primary"
+            label="Call"
+            @click="getCasesCallable"
+            no-caps
+            unelevated
+          />
+        </q-card-section>
+        <q-card-section>
+          <q-scroll-area style="height: 300px;">
+            <q-list bordered rounded>
+              <q-item
+                v-for="(caseObj, index) in cases"
+                :key="index"
+                clickable
+                v-ripple
+              >
+                <q-item-section
+                  >{{ caseObj.Subject }}
+                  <q-item-label caption>
+                    {{ caseObj.Status }}
+                  </q-item-label>
+                </q-item-section>
+              </q-item>
+            </q-list>
+          </q-scroll-area>
+        </q-card-section>
+        <q-inner-loading :showing="isLoadingCases">
+          <q-spinner-gears size="50px" color="primary" />
+        </q-inner-loading>
+      </q-card>
+      <q-card class="col-6 offset-3 q-mt-lg">
         <q-card-section class="q-gutter-md">
           <q-input
             v-model="text"
@@ -80,6 +152,8 @@
 </template>
 
 <script>
+import { firebaseFunctions } from "boot/firebase";
+
 export default {
   data() {
     return {
@@ -95,7 +169,9 @@ export default {
       },
       text: null,
       accounts: null,
-      isLoadingAccounts: false
+      cases: null,
+      isLoadingAccounts: false,
+      isLoadingCases: false
     };
   },
   methods: {
@@ -147,6 +223,42 @@ export default {
         .catch(error => {
           console.log(error);
           this.isLoadingAccounts = false;
+        });
+    },
+    getAccountsCallable() {
+      this.isLoadingAccounts = true;
+      const functionGetAccountsCallable = firebaseFunctions.httpsCallable(
+        "getAccountsCallable"
+      );
+      functionGetAccountsCallable()
+        .then(result => {
+          console.log(result.data);
+          this.accounts = result.data;
+          this.isLoadingAccounts = false;
+        })
+        .catch(error => {
+          console.log(error.code);
+          console.log(error.message);
+          console.log(error.details);
+          this.isLoadingAccounts = false;
+        });
+    },
+    getCasesCallable() {
+      this.isLoadingCases = true;
+      const functionGetCasesCallable = firebaseFunctions.httpsCallable(
+        "getCasesCallable"
+      );
+      functionGetCasesCallable()
+        .then(result => {
+          console.log(result.data);
+          this.cases = result.data;
+          this.isLoadingCases = false;
+        })
+        .catch(error => {
+          console.log(error.code);
+          console.log(error.message);
+          console.log(error.details);
+          this.isLoadingCases = false;
         });
     }
   }

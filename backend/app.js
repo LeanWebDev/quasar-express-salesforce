@@ -3,15 +3,14 @@ const express = require("express");
 const jsforce = require("jsforce");
 const path = require("path");
 const bodyParser = require("body-parser");
-const conn = new jsforce.Connection({
-  loginUrl: "https://optimityuk--partial.my.salesforce.com/"
-});
+const conn = new jsforce.Connection({});
 const cors = require("cors");
 const dotenv = require("dotenv");
 
 // Environment
 dotenv.config();
 console.log("Is it working? Ping ->", process.env.PING);
+console.log("Is it working? Password ->", process.env.SF_PASSWORD);
 
 // Express config
 const app = express();
@@ -539,6 +538,48 @@ app.post("/case/new", function(req, res) {
           res.send(ret);
         }
       );
+
+      /* End query logic */
+    }
+  );
+});
+
+// Case -> related (to this account)
+
+app.get("/case/related/:accountId", function(req, res) {
+  let records = [];
+  let accountId = req.params.accountId;
+  console.log(`THIS IS THE ACCOUNT ID TO QUERY WITH!!!! ${accountId}`);
+
+  let q = `SELECT Id, Subject, Status, Type, CaseNumber, Description, OwnerId, Reason, Origin, CreatedDate, ClosedDate FROM Case WHERE AccountId = '${accountId}' ORDER BY CreatedDate DESC LIMIT 20`;
+  // Connection login setup
+  conn.login(
+    process.env.SF_USERNAME,
+    process.env.SF_PASSWORD + process.env.SF_SECURITY_TOKEN,
+    function(loginErr, loginResult) {
+      if (loginErr) {
+        return console.error(loginErr);
+      }
+      console.log("Related Cases for this account -> all(:accountId");
+
+      /* Start query logic */
+
+      let query = conn
+        .query(q)
+        .on("record", function(record) {
+          // console.log(record);
+          records.push(record);
+          // console.log(records);
+        })
+        .on("end", function() {
+          console.log("total in database : " + query.totalSize);
+          console.log("total fetched : " + query.totalFetched);
+          res.json(records);
+        })
+        .on("error", function(err) {
+          console.error(err);
+        })
+        .run({ autoFetch: true, maxFetch: 4000 }); // synonym of Query#execute();
 
       /* End query logic */
     }

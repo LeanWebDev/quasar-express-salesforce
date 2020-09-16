@@ -105,6 +105,95 @@ exports.getAccounts = functions
     );
   });
 
+// Account -> All (callable)
+exports.getAccountsCallable = functions
+  .region("europe-west2")
+  .https.onCall((data, context) => {
+    const conn = new jsforce.Connection();
+    let records = [];
+    let q = "SELECT Id, Name, AccountNumber, Industry, Type FROM Account";
+    // Connection login setup
+    return new Promise((resolve, reject) => {
+      conn.login(
+        process.env.SF_USERNAME,
+        process.env.SF_PASSWORD + process.env.SF_SECURITY_TOKEN,
+        function(loginErr, loginResult) {
+          if (loginErr) {
+            return console.error(loginErr);
+          }
+          console.log("Account -> all");
+
+          /* Start query logic */
+
+          let query = conn
+            .query(q)
+            .on("record", function(record) {
+              // console.log(record);
+              records.push(record);
+              // console.log(records);
+            })
+            .on("end", function() {
+              console.log("total in database : " + query.totalSize);
+              console.log("total fetched : " + query.totalFetched);
+              resolve(records);
+            })
+            .on("error", function(err) {
+              console.error(err);
+              reject(err);
+            })
+            .run({ autoFetch: true, maxFetch: 4000 }); // synonym of Query#execute();
+
+          /* End query logic */
+        }
+      );
+    });
+  });
+
+// Case -> All (callable)
+exports.getCasesCallable = functions
+  .region("europe-west2")
+  .https.onCall((data, context) => {
+    const conn = new jsforce.Connection();
+    let records = [];
+    let q =
+      "SELECT Id, Subject, Status, Type, CaseNumber, Description, OwnerId, Reason, SourceId, CreatedDate, ClosedDate, Product__c FROM Case ORDER BY CreatedDate DESC";
+    // Connection login setup
+    return new Promise((resolve, reject) => {
+      conn.login(
+        process.env.SF_USERNAME,
+        process.env.SF_PASSWORD + process.env.SF_SECURITY_TOKEN,
+        function(loginErr, loginResult) {
+          if (loginErr) {
+            return console.error(loginErr);
+          }
+          console.log("Cases -> all");
+
+          /* Start query logic */
+
+          let query = conn
+            .query(q)
+            .on("record", function(record) {
+              // console.log(record);
+              records.push(record);
+              // console.log(records);
+            })
+            .on("end", function() {
+              console.log("total in database : " + query.totalSize);
+              console.log("total fetched : " + query.totalFetched);
+              resolve(records);
+            })
+            .on("error", function(err) {
+              console.error(err);
+              reject(err);
+            })
+            .run({ autoFetch: true, maxFetch: 4000 }); // synonym of Query#execute();
+
+          /* End query logic */
+        }
+      );
+    });
+  });
+
 // Take the text parameter passed to this HTTP endpoint and insert it into
 // Cloud Firestore under the path /messages/:documentId/original
 exports.addMessage = functions

@@ -161,7 +161,7 @@ export default {
       errored: false,
       showCreateCase: false,
       createCaseForm: {
-        accountId: "0014K000004X8MNQA0",
+        accountId: "",
         subject: null,
         description: null,
         reason: null,
