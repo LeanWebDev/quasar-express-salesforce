@@ -222,11 +222,8 @@ exports.createCaseCallable = functions
   .region("europe-west2")
   .https.onCall((data, context) => {
     /* Context */
-
+    console.log("THIS IS THE AUTH CONTEXT " + context.auth);
     // Authentication information found on the request.
-    const uid = context.auth.uid;
-    const name = context.auth.token.name || null;
-    const email = context.auth.token.email || null;
 
     // Checking that the user is authenticated.
     if (!context.auth) {
@@ -236,6 +233,10 @@ exports.createCaseCallable = functions
         "Only authenticated requests are accepted."
       );
     }
+
+    const uid = context.auth.uid || null;
+    const name = context.auth.token.name || null;
+    const email = context.auth.token.email || null;
 
     /* Data */
 

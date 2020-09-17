@@ -20,7 +20,7 @@ const firebaseApp = firebase.initializeApp(firebaseConfig);
 const firebaseAuth = firebaseApp.auth();
 const firebaseDb = firebaseApp.database();
 const firebaseFunctions = firebaseApp.functions("europe-west2");
-// firebaseFunctions.useFunctionsEmulator("http://localhost:5001");
+firebaseFunctions.useFunctionsEmulator("http://localhost:5001");
 
 // Declare available functions
 const functionGetAccountsCallable = firebaseFunctions.httpsCallable(
