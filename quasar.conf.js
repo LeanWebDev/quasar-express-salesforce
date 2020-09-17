@@ -18,7 +18,7 @@ module.exports = function(ctx) {
     // app boot file (/src/boot)
     // --> boot files are part of "main.js"
     // https://quasar.dev/quasar-cli/boot-files
-    boot: ["i18n", "axios", "firebase"],
+    boot: ["i18n", "axios", "firebase", "router-auth"],
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css
     css: ["app.scss"],
@@ -34,7 +34,7 @@ module.exports = function(ctx) {
       // 'roboto-font-latin-ext', // this or either 'roboto-font', NEVER both!
 
       "roboto-font", // optional, you are not bound to it
-      "material-icons" // optional, you are not bound to it
+      "material-icons-outlined" // optional, you are not bound to it
     ],
 
     // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
@@ -79,7 +79,7 @@ module.exports = function(ctx) {
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-framework
     framework: {
-      iconSet: "material-icons", // Quasar icon set
+      iconSet: "material-icons-outlined", // Quasar icon set
       lang: "en-us", // Quasar language pack
       config: {
         screen: {

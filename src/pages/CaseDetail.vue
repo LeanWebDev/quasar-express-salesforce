@@ -51,7 +51,7 @@
         <div class="col-12 text-center q-py-lg">
           <q-btn
             color="primary"
-            icon="add"
+            icon="o_add"
             label="Add more EmailMessages"
             @click="showCreateEmailMessage = true"
             no-caps
@@ -255,7 +255,7 @@ export default {
           this.$q.notify({
             color: "green-4",
             textColor: "white",
-            icon: "cloud_done",
+            icon: "o_cloud_done",
             message: "Submitted"
           });
           this.showCreateEmailMessage = false;

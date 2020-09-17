@@ -18,7 +18,7 @@
                 @click="getRelatedCases(accountId)"
                 class="q-mt-lg"
                 color="primary"
-                icon="autorenew"
+                icon="o_autorenew"
                 size="12px"
                 flat
                 round
@@ -739,7 +739,7 @@ export default {
           this.$q.notify({
             color: "green-4",
             textColor: "white",
-            icon: "cloud_done",
+            icon: "o_cloud_done",
             message: "Submitted"
           });
           this.showCreateCase = false;
@@ -752,7 +752,7 @@ export default {
           this.$q.notify({
             color: "red-5",
             textColor: "white",
-            icon: "warning",
+            icon: "o_warning",
             message: error
           });
         });
@@ -826,7 +826,7 @@ export default {
           this.$q.notify({
             color: "green-4",
             textColor: "white",
-            icon: "cloud_done",
+            icon: "o_cloud_done",
             message: "Submitted"
           });
           this.showCreateEmailMessage = false;

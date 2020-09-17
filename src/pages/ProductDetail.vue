@@ -1,54 +1,33 @@
 <template>
   <q-page padding>
     <div class="row q-mb-xl">
-      <div class="col-12 text-center text-h3">Contact # ({{ contactId }})</div>
+      <div class="col-12 text-center text-h3">Product # ({{ productId }})</div>
     </div>
     <div class="row ">
       <div class="col-6 offset-3">
         <q-card class="col-12 q-mb-md">
           <q-card-section class="text-h6">
-            Contact Profile
+            Product Profile
           </q-card-section>
           <q-separator />
           <q-card-section>
             <div class="row">
               <div class="col-12 col-sm-9 q-gutter-md">
                 <q-form
-                  @submit.prevent="onSubmitContactFormUpdate"
+                  @submit.prevent="onSubmitProductFormUpdate"
                   class="q-gutter-md"
                 >
                   <q-input
-                    v-model="contact.firstName"
+                    v-model="product.name"
                     type="text"
                     label="Forename"
                     outlined
                     dense
                   />
                   <q-input
-                    v-model="contact.lastName"
+                    v-model="product.description"
                     type="text"
                     label="Surname"
-                    outlined
-                    dense
-                  />
-                  <q-input
-                    v-model="contact.email"
-                    type="email"
-                    label="Email"
-                    outlined
-                    dense
-                  />
-                  <q-input
-                    v-model="contact.phone"
-                    type="tel"
-                    label="Phone number"
-                    outlined
-                    dense
-                  />
-                  <q-input
-                    v-model="contact.department"
-                    type="text"
-                    label="Department"
                     outlined
                     dense
                   />
@@ -76,27 +55,21 @@ export default {
   data() {
     return {
       isLoading: false,
-      contactId: "",
-      contact: {
-        firstName: null,
-        lastName: null,
-        email: null,
-        phone: null,
-        department: null
+      productId: "",
+      product: {
+        name: null,
+        description: null
       }
     };
   },
   methods: {
-    getContactDetail(contactId) {
+    getProductDetail(productId) {
       this.isLoading = true;
       this.$axios
-        .get("http://localhost:3000/contact/" + contactId)
+        .get("http://localhost:3000/product/" + productId)
         .then(response => {
-          this.contact.firstName = response.data.FirstName;
-          this.contact.lastName = response.data.LastName;
-          this.contact.email = response.data.Email;
-          this.contact.phone = response.data.Phone;
-          this.contact.department = response.data.Department;
+          this.product.name = response.data.Name;
+          this.product.description = response.data.Description;
           this.isLoading = false;
         })
         .catch(error => {
@@ -107,16 +80,13 @@ export default {
       this.isLoading = true;
     },
 
-    onSubmitContactFormUpdate() {
+    onSubmitProductFormUpdate() {
       this.isLoading = true;
       this.$axios
-        .post("http://localhost:3000/contact/update", {
-          contactId: this.contactId,
-          firstName: this.contact.firstName,
-          lastName: this.contact.lastName,
-          email: this.contact.email,
-          phone: this.contact.phone,
-          department: this.contact.department
+        .post("http://localhost:3000/product/update", {
+          productId: this.productId,
+          name: this.product.name,
+          description: this.product.description
         })
         .then(response => {
           console.log(response);
@@ -124,10 +94,10 @@ export default {
             color: "green-4",
             textColor: "white",
             icon: "o_cloud_done",
-            message: "Contact has been updated"
+            message: "Product has been updated"
           });
           this.isLoading = false;
-          this.getContactDetail(this.contactId);
+          this.getProductDetail(this.productId);
         })
         .catch(error => {
           console.log(error);
@@ -136,8 +106,8 @@ export default {
     }
   },
   mounted() {
-    this.contactId = this.$route.params.contactId;
-    this.getContactDetail(this.contactId);
+    this.productId = this.$route.params.productId;
+    this.getProductDetail(this.productId);
   }
 };
 </script>

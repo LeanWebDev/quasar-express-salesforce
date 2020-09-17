@@ -15,11 +15,27 @@ const firebaseConfig = {
   measurementId: process.env.LWD_MEASUREMENT_ID
 };
 
-// Initialise Firebase
+// Initialise Firebase services
 const firebaseApp = firebase.initializeApp(firebaseConfig);
 const firebaseAuth = firebaseApp.auth();
 const firebaseDb = firebaseApp.database();
 const firebaseFunctions = firebaseApp.functions("europe-west2");
 // firebaseFunctions.useFunctionsEmulator("http://localhost:5001");
 
-export { firebaseAuth, firebaseDb, firebaseFunctions };
+// Declare available functions
+const functionGetAccountsCallable = firebaseFunctions.httpsCallable(
+  "getAccountsCallable"
+);
+const functionGetCasesCallable = firebaseFunctions.httpsCallable(
+  "getCasesCallable"
+);
+
+export {
+  // Services
+  firebaseAuth,
+  firebaseDb,
+  firebaseFunctions,
+  // Available functions
+  functionGetAccountsCallable,
+  functionGetCasesCallable
+};

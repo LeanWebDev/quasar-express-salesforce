@@ -716,6 +716,131 @@ app.post("/email-message/new", function(req, res) {
   );
 });
 
+/////// Products ////////////
+
+// Product -> all
+
+app.get("/product/all", function(req, res) {
+  let records = [];
+  let q =
+    "SELECT ProductCode, Name, Description, Family, StockKeepingUnit, DisplayUrl FROM Product2";
+  // Connection login setup
+  conn.login(
+    process.env.SF_USERNAME,
+    process.env.SF_PASSWORD + process.env.SF_SECURITY_TOKEN,
+    function(loginErr, loginResult) {
+      if (loginErr) {
+        return console.error(loginErr);
+      }
+      console.log("Product -> all");
+
+      /* Start query logic */
+
+      let query = conn
+        .query(q)
+        .on("record", function(record) {
+          // console.log(record);
+          records.push(record);
+          // console.log(records);
+        })
+        .on("end", function() {
+          console.log("total in database : " + query.totalSize);
+          console.log("total fetched : " + query.totalFetched);
+          res.json(records);
+        })
+        .on("error", function(err) {
+          console.error(err);
+        })
+        .run({ autoFetch: true, maxFetch: 4000 }); // synonym of Query#execute();
+
+      /* End query logic */
+    }
+  );
+});
+
+// Product -> single (getProductDetail)
+
+app.get("/product/:id", function(req, res) {
+  let productId = req.params.id;
+  console.log(productId);
+  let product = {};
+  // Connection login setup
+  conn.login(
+    process.env.SF_USERNAME,
+    process.env.SF_PASSWORD + process.env.SF_SECURITY_TOKEN,
+    function(loginErr, loginResult) {
+      if (loginErr) {
+        return console.error(loginErr);
+      }
+      console.log("Product -> single(:id)");
+
+      /* Start query logic */
+
+      let query = conn
+        .sobject("Product")
+        .retrieve(productId, function(queryError, queryResult) {
+          if (queryError) {
+            return console.error(queryError);
+          }
+          console.log("Name : " + queryResult.Name);
+          product = queryResult;
+          console.log(product);
+          res.send(product);
+        });
+
+      /* End query logic */
+    }
+  );
+});
+
+// Product => update
+app.post("/product/update", function(req, res) {
+  console.log("Got body:", req.body);
+  let contactId = req.body.contactId;
+  let firstName = req.body.firstName;
+  let lastName = req.body.lastName;
+  let email = req.body.email;
+  let phone = req.body.phone;
+  let department = req.body.department;
+  let params = [contactId, firstName, lastName, email, phone, department];
+  console.log("Here are the params -->" + params);
+  // Connection login setup
+  conn.login(
+    process.env.SF_USERNAME,
+    process.env.SF_PASSWORD + process.env.SF_SECURITY_TOKEN,
+    function(loginErr, loginResult) {
+      if (loginErr) {
+        return console.error(loginErr);
+      }
+      console.log("Login result: " + loginResult);
+      console.log("Contact -> update");
+
+      /* Start query logic */
+
+      let query = conn.sobject("Contact").update(
+        {
+          Id: contactId,
+          FirstName: firstName,
+          LastName: lastName,
+          Email: email,
+          Phone: phone,
+          Department: department
+        },
+        function(err, ret) {
+          if (err || !ret.success) {
+            return console.error(err, ret);
+          }
+          console.log("Updated this contact : " + ret.id);
+          console.log(ret);
+          res.send(ret);
+        }
+      );
+
+      /* End query logic */
+    }
+  );
+});
+
 //////////// User (Typically to check the account manager[owner]) /////////////
 
 app.get("/user/:id", function(req, res) {

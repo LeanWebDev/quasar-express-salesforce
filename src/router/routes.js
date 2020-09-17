@@ -3,6 +3,7 @@ const routes = [
     path: "/",
     component: () => import("layouts/MainLayout.vue"),
     children: [
+      { path: "/auth", component: () => import("pages/PageAuth.vue") },
       { path: "", component: () => import("pages/Index.vue") },
       { path: "/account", component: () => import("pages/Account.vue") },
       {
@@ -31,6 +32,11 @@ const routes = [
       {
         path: "/cloud-functions",
         component: () => import("pages/CloudFunctions.vue")
+      },
+      { path: "/product", component: () => import("pages/Product.vue") },
+      {
+        path: "/product/:productId",
+        component: () => import("pages/ProductDetail.vue")
       }
     ]
   },

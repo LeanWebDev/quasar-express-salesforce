@@ -6,7 +6,7 @@
         <q-space />
         <q-btn
           color="primary"
-          icon="assignment"
+          icon="o_assignment"
           label="New Case"
           @click="showCreateCase = true"
           no-caps
@@ -197,7 +197,7 @@ export default {
         this.$q.notify({
           color: "red-5",
           textColor: "white",
-          icon: "warning",
+          icon: "o_warning",
           message: "You need to accept the rules and terms first"
         });
       } else {
@@ -214,7 +214,7 @@ export default {
             this.$q.notify({
               color: "green-4",
               textColor: "white",
-              icon: "cloud_done",
+              icon: "o_cloud_done",
               message: "Submitted"
             });
             this.showCreateCase = false;

@@ -6,7 +6,7 @@
           flat
           dense
           round
-          icon="menu"
+          icon="o_menu"
           aria-label="Menu"
           @click="leftDrawerOpen = !leftDrawerOpen"
         />
@@ -15,7 +15,28 @@
           Quasar x Express x Salesforce
         </q-toolbar-title>
 
-        <div>Quasar v{{ $q.version }}</div>
+        <q-btn
+          v-if="!loggedIn"
+          color="white"
+          icon-right="o_account_circle"
+          label="Auth"
+          class="absolute-right"
+          to="/auth"
+          flat
+          dense
+          no-caps
+        />
+        <q-btn
+          v-else
+          @click="logoutUser"
+          color="white"
+          icon-right="o_grass"
+          label="Logout"
+          class="absolute-right"
+          flat
+          dense
+          no-caps
+        />
       </q-toolbar>
     </q-header>
 
@@ -46,49 +67,56 @@
 
 <script>
 import EssentialLink from "components/EssentialLink.vue";
+import { mapState, mapActions } from "vuex";
 
 const linksData = [
   {
     title: "Home",
     caption: "/",
-    icon: "school",
+    icon: "o_school",
     link: "/"
   },
   {
     title: "Account",
     caption: "/account",
-    icon: "code",
+    icon: "o_code",
     link: "/account"
   },
   {
     title: "Contact",
     caption: "/contact",
-    icon: "chat",
+    icon: "o_chat",
     link: "/contact"
   },
   {
     title: "Case",
     caption: "/case",
-    icon: "record_voice_over",
+    icon: "o_record_voice_over",
     link: "/case"
   },
   {
     title: "Case Table",
     caption: "/case-table",
-    icon: "list",
+    icon: "o_list",
     link: "/case-table"
   },
   {
     title: "EmailMessage",
     caption: "/email-message",
-    icon: "rss_feed",
+    icon: "o_rss_feed",
     link: "/email-message"
   },
   {
     title: "Cloud Functions",
     caption: "/cloud-functions",
-    icon: "whatshot",
+    icon: "o_whatshot",
     link: "/cloud-functions"
+  },
+  {
+    title: "Product",
+    caption: "/product",
+    icon: "o_category",
+    link: "/product"
   }
 ];
 
@@ -100,6 +128,12 @@ export default {
       leftDrawerOpen: false,
       essentialLinks: linksData
     };
+  },
+  computed: {
+    ...mapState("auth", ["loggedIn"])
+  },
+  methods: {
+    ...mapActions("auth", ["logoutUser"])
   }
 };
 </script>

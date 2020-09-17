@@ -37,7 +37,7 @@
               @click="getAccountDetails(accountId)"
               class="q-mt-lg"
               color="primary"
-              icon="autorenew"
+              icon="o_autorenew"
               size="12px"
               flat
               round
@@ -141,7 +141,7 @@
               @click="getContactDetail(contactId)"
               class="q-mt-lg"
               color="primary"
-              icon="autorenew"
+              icon="o_autorenew"
               size="12px"
               flat
               round
@@ -228,7 +228,7 @@
               @click="getAccountAddresses(accountId)"
               class="q-mt-lg"
               color="primary"
-              icon="autorenew"
+              icon="o_autorenew"
               size="12px"
               flat
               round
@@ -397,7 +397,7 @@
               @click="getAccountManager(accountManagerUserID)"
               class="q-mt-lg"
               color="primary"
-              icon="autorenew"
+              icon="o_autorenew"
               size="12px"
               flat
               round
@@ -485,7 +485,7 @@
               @click="getSubscriptions"
               class="q-mt-lg"
               color="primary"
-              icon="autorenew"
+              icon="o_autorenew"
               size="12px"
               flat
               round
@@ -762,7 +762,7 @@ export default {
           this.$q.notify({
             color: "green-4",
             textColor: "white",
-            icon: "cloud_done",
+            icon: "o_cloud_done",
             message: "Account has been updated"
           });
           this.isLoading.accountAddressesSubmit = false;
@@ -773,7 +773,7 @@ export default {
           this.$q.notify({
             color: "red-4",
             textColor: "white",
-            icon: "cloud_done",
+            icon: "o_cloud_done",
             message: "An error has occured"
           });
           this.isLoading.accountAddressesSubmit = false;
@@ -833,7 +833,7 @@ export default {
           this.$q.notify({
             color: "green-4",
             textColor: "white",
-            icon: "cloud_done",
+            icon: "o_cloud_done",
             message: "Contact has been updated"
           });
           this.isLoading.contactDetail = false;

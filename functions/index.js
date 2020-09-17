@@ -1,5 +1,5 @@
 const jsforce = require("jsforce");
-
+const sanitizer = require("sanitizer");
 const dotenv = require("dotenv");
 
 // Environment
@@ -47,21 +47,23 @@ exports.authedFunction = functions
       );
     }
 
-    // Saving the new message to the Realtime Database.
-    const sanitizedMessage = sanitizer.sanitizeText(text); // Sanitize the message.
+    // console.log(context);
+    // stringContext = JSON.stringify(context);
 
-    return admin
-      .database()
-      .ref("/messages")
-      .push({
-        text: sanitizedMessage,
-        author: { uid, name, picture, email }
-      })
-      .then(() => {
-        console.log("New Message written");
-        // Returning the sanitized message to the client.
-        return { text: sanitizedMessage };
-      });
+    return { contextObj: context.auth };
+
+    // return admin
+    //   .database()
+    //   .ref("/messages")
+    //   .push({
+    //     text: text,
+    //     author: { uid, name, picture, email }
+    //   })
+    //   .then(() => {
+    //     console.log("New Message written");
+    //     // Returning the sanitized message to the client.
+    //     return { text: text };
+    //   });
   });
 
 // Accounts -> All
@@ -109,6 +111,26 @@ exports.getAccounts = functions
 exports.getAccountsCallable = functions
   .region("europe-west2")
   .https.onCall((data, context) => {
+    /* Context */
+
+    // Authentication information found on the request.
+    const uid = context.auth.uid;
+    const name = context.auth.token.name || null;
+    const email = context.auth.token.email || null;
+
+    // Checking that the user is authenticated.
+    if (!context.auth) {
+      // Throwing a HttpsError so that the client gets the error details.
+      throw new functions.https.HttpsError(
+        "unauthenticated",
+        "Only authenticated requests are accepted."
+      );
+    }
+
+    /* Data */
+
+    /* Function logic */
+
     const conn = new jsforce.Connection();
     let records = [];
     let q = "SELECT Id, Name, AccountNumber, Industry, Type FROM Account";
@@ -135,13 +157,14 @@ exports.getAccountsCallable = functions
             .on("end", function() {
               console.log("total in database : " + query.totalSize);
               console.log("total fetched : " + query.totalFetched);
-              resolve(records);
+              return resolve(records);
             })
             .on("error", function(err) {
+              // THROW errors
               console.error(err);
-              reject(err);
+              return reject(err);
             })
-            .run({ autoFetch: true, maxFetch: 4000 }); // synonym of Query#execute();
+            .run();
 
           /* End query logic */
         }
@@ -180,13 +203,121 @@ exports.getCasesCallable = functions
             .on("end", function() {
               console.log("total in database : " + query.totalSize);
               console.log("total fetched : " + query.totalFetched);
-              resolve(records);
+              return resolve(records);
             })
             .on("error", function(err) {
               console.error(err);
-              reject(err);
+              return reject(err);
             })
             .run({ autoFetch: true, maxFetch: 4000 }); // synonym of Query#execute();
+
+          /* End query logic */
+        }
+      );
+    });
+  });
+
+// Case -> New (callable)
+exports.createCaseCallable = functions
+  .region("europe-west2")
+  .https.onCall((data, context) => {
+    /* Context */
+
+    // Authentication information found on the request.
+    const uid = context.auth.uid;
+    const name = context.auth.token.name || null;
+    const email = context.auth.token.email || null;
+
+    // Checking that the user is authenticated.
+    if (!context.auth) {
+      // Throwing a HttpsError so that the client gets the error details.
+      throw new functions.https.HttpsError(
+        "unauthenticated",
+        "Only authenticated requests are accepted."
+      );
+    }
+
+    /* Data */
+
+    // Message text passed from the client.
+    const accountId = data.accountId;
+    const subject = data.subject;
+    const description = data.description;
+    const reason = data.reason;
+    const type = data.type;
+    const origin = "atlas";
+
+    // Checking data attributes.
+    if (!(typeof accountId === "string") || accountId.length === 0) {
+      // Throwing an HttpsError so that the client gets the error details.
+      throw new functions.https.HttpsError(
+        "invalid-argument",
+        "The function must be called with the account Id which must be a string"
+      );
+    } else if (!(typeof subject === "string")) {
+      throw new functions.https.HttpsError(
+        "invalid-argument",
+        "The subject must be a string value."
+      );
+    } else if (!(typeof description === "string")) {
+      throw new functions.https.HttpsError(
+        "invalid-argument",
+        "The description must be a string value."
+      );
+    } else if (!(typeof reason === "string")) {
+      throw new functions.https.HttpsError(
+        "invalid-argument",
+        "The reason must be a string value."
+      );
+    } else if (!(typeof type === "string")) {
+      throw new functions.https.HttpsError(
+        "invalid-argument",
+        "The type must be a string value."
+      );
+    } else {
+      console.log("All data attribute checks passed successfully.");
+    }
+    /* Function logic */
+
+    const conn = new jsforce.Connection();
+    let records = [];
+    let q = "SELECT Id, Name, AccountNumber, Industry, Type FROM Account";
+    // Connection login setup
+    return new Promise((resolve, reject) => {
+      conn.login(
+        process.env.SF_USERNAME,
+        process.env.SF_PASSWORD + process.env.SF_SECURITY_TOKEN,
+        function(loginErr, loginResult) {
+          if (loginErr) {
+            return console.error(loginErr);
+          }
+          console.log("Case -> New");
+
+          /* Start query logic */
+
+          let query = conn.sobject("Case").create(
+            {
+              AccountId: accountId,
+              Subject: subject,
+              Reason: reason,
+              Type: type,
+              Description: description,
+              Origin: origin
+            },
+            function(err, ret) {
+              if (err || !ret.success) {
+                console.error(err, ret);
+                throw new functions.https.HttpsError(
+                  "unknown",
+                  "A service error has occurred."
+                );
+                // return reject(err);
+              }
+              console.log("Created case id : " + ret.id);
+              console.log(ret);
+              return resolve(ret);
+            }
+          );
 
           /* End query logic */
         }
