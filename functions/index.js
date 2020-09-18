@@ -1,22 +1,107 @@
 const jsforce = require("jsforce");
 const sanitizer = require("sanitizer");
 const dotenv = require("dotenv");
-
+const express = require("express");
 // Environment
 dotenv.config();
 
 const functions = require("firebase-functions");
+
 const admin = require("firebase-admin");
 admin.initializeApp();
-// const db = admin.firestore();
 
-// // Create and Deploy Your First Cloud Functions
-// // https://firebase.google.com/docs/functions/write-firebase-functions
-//
-// exports.helloWorld = functions.https.onRequest((request, response) => {
-//   functions.logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });
+const firestore = admin.firestore();
+
+// const firebaseConfig = {
+//   apiKey: process.env.LWD_API_KEY,
+//   authDomain: process.env.LWD_AUTH_DOMAIN,
+//   databaseURL: process.env.LWD_DATABASE_URL,
+//   projectId: process.env.LWD_PROJECT_ID,
+//   storageBucket: process.env.LWD_STORAGE_BUCKET,
+//   messagingSenderId: process.env.LWD_MESSAGING_SENDER_ID,
+//   appId: process.env.LWD_APP_ID,
+//   measurementId: process.env.LWD_MEASUREMENT_ID
+// };
+
+// // Initialise Firebase services
+// firebase.initializeApp(firebaseConfig);
+
+////////////////////////////////
+///// Trigger functions /////
+////////////////////////////////
+
+// Express
+const triggersApp = require("express")();
+const basicAuth = require("express-basic-auth");
+const cors = require("cors");
+const bodyParser = require("body-parser");
+triggersApp.use(bodyParser.json());
+triggersApp.use(express.urlencoded({ extended: true }));
+
+// Automatically allow cross-origin requests
+triggersApp.use(cors({ origin: true }));
+
+triggersApp.use(
+  basicAuth({
+    users: { atlas_agent: "7ggTM=KrF$W94b$M" }
+  })
+);
+
+triggersApp.get("*", (req, res) => {
+  console.log(req.body);
+  console.log(res);
+  res.json(req.body);
+});
+
+exports.onAtlasEnabledUpdate = functions
+  .region("europe-west2")
+  .https.onRequest(triggersApp);
+
+// exports.onAtlasEmailUpdate = functions.https.onRequest((req, res) => {});
+
+////////////////////////////////
+///// Background functions /////
+////////////////////////////////
+
+/* Account creation */
+exports.createUserDocument = functions
+  .region("europe-west2")
+  .auth.user()
+  .onCreate(user => {
+    const userDoc = {
+      uid: user.uid,
+      name: user.displayName || "No Name",
+      email: user.email
+    };
+
+    return firestore
+      .collection("users")
+      .doc(user.uid)
+      .set(userDoc)
+      .then(() => {
+        console.log(`User documented created for uid: ${user.uid}`);
+      })
+      .catch(error => {
+        console.log("Error when creating user document: " + error);
+      });
+  });
+
+/* Account deletion */
+exports.deleteUserDocument = functions
+  .region("europe-west2")
+  .auth.user()
+  .onDelete(user => {
+    return firestore
+      .collection("users")
+      .doc(user.uid)
+      .delete()
+      .then(() => {
+        console.log(`User documented deleted for uid: ${user.uid}`);
+      })
+      .catch(error => {
+        console.log("Error when deleting user document: " + error);
+      });
+  });
 
 exports.authedFunction = functions
   .region("europe-west2")

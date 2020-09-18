@@ -17,7 +17,7 @@
     </q-card>
     <q-card class="col-6 offset-3 q-mt-lg">
       <q-card-section class="text-h6">
-        Add a new case
+        Add a new case (will only work after authenticated)
       </q-card-section>
       <q-separator />
       <q-card-section>
