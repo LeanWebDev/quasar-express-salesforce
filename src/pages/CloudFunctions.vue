@@ -58,6 +58,7 @@
           <q-spinner-gears size="50px" color="primary" />
         </q-inner-loading>
       </q-card>
+      <div class="row col-12 q-my-lg text-h4 text-center">Case Object</div>
       <q-card class="col-6 offset-3 q-mt-lg">
         <q-card-section>
           <div class="text-h6">getCasesCallable</div>
@@ -201,35 +202,280 @@
       </q-card>
       <q-card class="col-6 offset-3 q-mt-lg">
         <q-card-section>
-          <q-space />
-          <q-btn
-            color="grey"
-            label="Get accounts"
-            @click="getAccountsFunc"
-            flat
-            no-caps
-          />
+          <div class="row">
+            <q-btn
+              color="grey"
+              label="Get case detail"
+              @click="getCaseDetail(caseId)"
+              flat
+              no-caps
+            />
+            <q-space />
+            <q-btn
+              color="grey"
+              label="Clear"
+              @click="caseDetail = {}"
+              flat
+              no-caps
+            />
+          </div>
         </q-card-section>
         <q-separator />
-        <q-card-section v-if="accounts" style="height: 300px">
-          No accounts yet
+        <q-card-section style="height: 300px">
+          <q-scroll-area style="height: 300px;">
+            <pre>{{ caseDetail }}</pre>
+          </q-scroll-area>
         </q-card-section>
-        <q-scroll-area v-else style="height: 300px;">
-          <q-list>
-            <q-item
-              v-for="(account, index) in accounts"
-              :key="index"
-              clickable
-              v-ripple
-            >
-              <q-item-section caption>
-                <q-icon :label="account.Id" />
-              </q-item-section>
-              <q-item-section>{{ account.Name }}</q-item-section>
-            </q-item>
-          </q-list>
-        </q-scroll-area>
-        <q-inner-loading :showing="isLoadingAccounts">
+        <q-inner-loading :showing="isLoading.caseDetail">
+          <q-spinner-gears size="50px" color="primary" />
+        </q-inner-loading>
+      </q-card>
+
+      <q-card class="col-6 offset-3 q-mt-lg">
+        <q-card-section>
+          <div class="row">
+            <q-btn
+              color="grey"
+              label="Get case description (reasons)"
+              @click="getCaseDescriptionReason"
+              flat
+              no-caps
+            />
+            <q-space />
+            <q-btn
+              color="grey"
+              label="Clear"
+              @click="caseDescriptionReasons = []"
+              flat
+              no-caps
+            />
+          </div>
+        </q-card-section>
+        <q-separator />
+        <q-card-section style="height: 300px">
+          <q-scroll-area style="height: 300px;">
+            <pre>{{ caseDescriptionReasons }}</pre>
+          </q-scroll-area>
+        </q-card-section>
+        <q-inner-loading :showing="isLoading.caseDescriptionReason">
+          <q-spinner-gears size="50px" color="primary" />
+        </q-inner-loading>
+      </q-card>
+      <q-card class="col-6 offset-3 q-mt-lg">
+        <q-card-section>
+          <div class="row">
+            <q-btn
+              color="grey"
+              label="Get case description types"
+              @click="getCaseDescriptionType"
+              flat
+              no-caps
+            />
+            <q-space />
+            <q-btn
+              color="grey"
+              label="Clear"
+              @click="caseDescriptionTypes = []"
+              flat
+              no-caps
+            />
+          </div>
+        </q-card-section>
+        <q-separator />
+        <q-card-section style="height: 300px">
+          <q-scroll-area style="height: 300px;">
+            <pre>{{ caseDescriptionTypes }}</pre>
+          </q-scroll-area>
+        </q-card-section>
+        <q-inner-loading :showing="isLoading.caseDescriptionType">
+          <q-spinner-gears size="50px" color="primary" />
+        </q-inner-loading>
+      </q-card>
+      <q-card class="col-6 offset-3 q-mt-lg">
+        <q-card-section>
+          <div class="row">
+            <q-btn
+              color="grey"
+              label="Get case related"
+              @click="getCaseRelated(accountId)"
+              flat
+              no-caps
+            />
+            <q-space />
+            <q-btn
+              color="grey"
+              label="Clear"
+              @click="casesRelated = []"
+              flat
+              no-caps
+            />
+          </div>
+        </q-card-section>
+        <q-separator />
+        <q-card-section style="height: 300px">
+          <q-scroll-area style="height: 300px;">
+            <pre>{{ casesRelated }}</pre>
+          </q-scroll-area>
+        </q-card-section>
+        <q-inner-loading :showing="isLoading.caseRelated">
+          <q-spinner-gears size="50px" color="primary" />
+        </q-inner-loading>
+      </q-card>
+      <div class="row col-12 q-my-lg text-h4 text-center">
+        EmailMessage Object
+      </div>
+      <q-card class="col-6 offset-3 q-mt-lg">
+        <q-card-section>
+          <div class="row">
+            <q-btn
+              color="grey"
+              label="Get email messages"
+              @click="getEmailMessage"
+              flat
+              no-caps
+            />
+            <q-space />
+            <q-btn
+              color="grey"
+              label="Clear"
+              @click="emailMessages = []"
+              flat
+              no-caps
+            />
+          </div>
+        </q-card-section>
+        <q-separator />
+        <q-card-section style="height: 300px">
+          <q-scroll-area style="height: 300px;">
+            <pre>{{ emailMessages }}</pre>
+          </q-scroll-area>
+        </q-card-section>
+        <q-inner-loading :showing="isLoading.emailMessage">
+          <q-spinner-gears size="50px" color="primary" />
+        </q-inner-loading>
+      </q-card>
+      <q-card class="col-6 offset-3 q-mt-lg">
+        <q-card-section class="text-h6">
+          Add a new email message
+        </q-card-section>
+        <q-separator />
+        <q-card-section>
+          <q-form
+            @submit="onSubmitEmailMessageForm"
+            @reset="onResetEmailMessageForm"
+            class="q-gutter-md"
+          >
+            <q-input
+              v-model="createEmailMessageForm.subject"
+              label="Subject"
+              hint="Subject for this case"
+              :rules="[
+                val =>
+                  (val && val.length < 100) ||
+                  'Please type something with up to 100 characters'
+              ]"
+              maxlength="100"
+              counter
+              outlined
+              dense
+            />
+            <q-input
+              v-model="createEmailMessageForm.textBody"
+              type="textarea"
+              label="Text Body"
+              hint="Text body for thie email message"
+              :rules="[
+                val =>
+                  (val && val.length < 800) ||
+                  'Please type something with up to 800 characters'
+              ]"
+              maxlength="800"
+              counter
+              outlined
+              dense
+            />
+            <div>
+              <q-btn
+                label="Submit"
+                type="submit"
+                color="primary"
+                :loading="emailMessageObj.isLoading"
+              />
+              <q-btn
+                label="Reset"
+                type="reset"
+                color="primary"
+                flat
+                class="q-ml-sm"
+              />
+            </div>
+          </q-form>
+        </q-card-section>
+        <q-separator spaced inset />
+        <q-card-section>
+          <pre>{{ emailMessageObj.createEmailMessageResponse }}</pre>
+        </q-card-section>
+      </q-card>
+      <q-card class="col-6 offset-3 q-mt-lg">
+        <q-card-section>
+          <div class="row">
+            <q-btn
+              color="grey"
+              label="Get emaile messages related to (parentId)"
+              @click="getEmailMessageRelated(parentId)"
+              flat
+              no-caps
+            />
+            <q-space />
+            <q-btn
+              color="grey"
+              label="Clear"
+              @click="emailMessagesRelated = []"
+              flat
+              no-caps
+            />
+          </div>
+        </q-card-section>
+        <q-separator />
+        <q-card-section style="height: 300px">
+          <q-scroll-area style="height: 300px;">
+            <pre>{{ emailMessagesRelated }}</pre>
+          </q-scroll-area>
+        </q-card-section>
+        <q-inner-loading :showing="isLoading.emailMessageRelated">
+          <q-spinner-gears size="50px" color="primary" />
+        </q-inner-loading>
+      </q-card>
+      <div class="row col-12 q-my-lg text-h4 text-center">
+        Subscription Object
+      </div>
+      <q-card class="col-6 offset-3 q-mt-lg">
+        <q-card-section>
+          <div class="row">
+            <q-btn
+              color="grey"
+              label="Get subscriptions related to (accountId)"
+              @click="getSubscriptionRelated(accountId)"
+              flat
+              no-caps
+            />
+            <q-space />
+            <q-btn
+              color="grey"
+              label="Clear"
+              @click="subscriptionsRelated = []"
+              flat
+              no-caps
+            />
+          </div>
+        </q-card-section>
+        <q-separator />
+        <q-card-section style="height: 300px">
+          <q-scroll-area style="height: 300px;">
+            <pre>{{ subscriptionsRelated }}</pre>
+          </q-scroll-area>
+        </q-card-section>
+        <q-inner-loading :showing="isLoading.subscriptionRelated">
           <q-spinner-gears size="50px" color="primary" />
         </q-inner-loading>
       </q-card>
@@ -238,7 +484,21 @@
 </template>
 
 <script>
-import { firebaseFunctions } from "boot/firebase";
+import {
+  firebaseFunctions,
+  functionGetAccountsCallable,
+  functionGetCasesCallable,
+  functionGetCaseDetail,
+  functionsGetCaseDescriptionReason,
+  functionsGetCaseDescriptionType,
+  functionCreateCaseCallable,
+  functionsGetCaseRelated,
+  functionsGetEmailMessage,
+  functionsGetEmailMessageRelated,
+  functionsCreateEmailMessage,
+  functionsGetSubscriptionRelated
+} from "boot/firebase";
+import { date } from "quasar";
 
 export default {
   data() {
@@ -254,6 +514,7 @@ export default {
         measurementId: process.env.LWD_MEASUREMENT_ID
       },
       accountId: "0014K000004X8MNQA0",
+      caseId: "5004K000001UzzBQAS",
       text: null,
       sanitizedMessage: null,
       isLoadingAuthedFunction: false,
@@ -274,7 +535,34 @@ export default {
         accept: false
       },
       createCaseFormReasonOptions: ["Reason1", "Reason2", "Reason3"],
-      createCaseFormTypeOptions: ["Type1", "Type2", "Type3"]
+      createCaseFormTypeOptions: ["Type1", "Type2", "Type3"],
+      caseDetail: {},
+      caseDescriptionReasons: [],
+      caseDescriptionTypes: [],
+      casesRelated: [],
+      emailMessages: [],
+      emailMessagesRelated: [],
+      emailMessageObj: {
+        isLoading: false,
+        createEmailMessageResponse: null
+      },
+      parentId: "5004K000001UzzBQAS",
+      createEmailMessageForm: {
+        parentId: "5004K000001UzzBQAS",
+        subject: null,
+        textBody: null,
+        messageDate: null
+      },
+      subscriptionsRelated: [],
+      isLoading: {
+        caseDetail: false,
+        caseDescriptionReason: false,
+        caseDescriptionType: false,
+        caseRelated: false,
+        emailMessage: false,
+        emailMessageRelated: false,
+        subscriptionRelated: false
+      }
     };
   },
   methods: {
@@ -293,9 +581,7 @@ export default {
     },
     getAccountsCallable() {
       this.isLoadingAccounts = true;
-      const functionGetAccountsCallable = firebaseFunctions.httpsCallable(
-        "getAccountsCallable"
-      );
+
       functionGetAccountsCallable()
         .then(response => {
           console.log(response.data);
@@ -312,9 +598,6 @@ export default {
     // Cases
     getCasesCallable() {
       this.isLoadingCases = true;
-      const functionGetCasesCallable = firebaseFunctions.httpsCallable(
-        "getCasesCallable"
-      );
       functionGetCasesCallable()
         .then(response => {
           console.log(response.data);
@@ -328,11 +611,70 @@ export default {
           this.isLoadingCases = false;
         });
     },
+    getCaseDetail(caseId) {
+      console.log("This is the case ID :" + caseId);
+      this.isLoading.caseDetail = true;
+      functionGetCaseDetail({ caseId: caseId })
+        .then(response => {
+          console.log(response.data);
+          this.caseDetail = response.data;
+          this.isLoading.caseDetail = false;
+        })
+        .catch(error => {
+          console.log(error.code);
+          console.log(error.message);
+          console.log(error.details);
+          this.isLoading.caseDetail = false;
+        });
+    },
+    getCaseDescriptionReason() {
+      this.isLoading.caseDescriptionReason = true;
+      functionsGetCaseDescriptionReason()
+        .then(response => {
+          console.log(response.data);
+          this.caseDescriptionReasons = response.data;
+          this.isLoading.caseDescriptionReason = false;
+        })
+        .catch(error => {
+          console.log(error.code);
+          console.log(error.message);
+          console.log(error.details);
+          this.isLoading.caseDescriptionReason = false;
+        });
+    },
+    getCaseDescriptionType() {
+      this.isLoading.caseDescriptionType = true;
+      functionsGetCaseDescriptionType()
+        .then(response => {
+          console.log(response.data);
+          this.caseDescriptionTypes = response.data;
+          this.isLoading.caseDescriptionType = false;
+        })
+        .catch(error => {
+          console.log(error.code);
+          console.log(error.message);
+          console.log(error.details);
+          this.isLoading.caseDescriptionType = false;
+        });
+    },
+    getCaseRelated(accountId) {
+      this.isLoading.caseRelated = true;
+      functionsGetCaseRelated({ accountId: accountId })
+        .then(response => {
+          console.log(response.data);
+          this.casesRelated = response.data;
+          this.isLoading.caseRelated = false;
+        })
+        .catch(error => {
+          console.log(error.code);
+          console.log(error.message);
+          console.log(error.details);
+          this.isLoading.caseRelated = false;
+        });
+    },
     onSubmitCaseForm() {
       this.caseObj.isLoading = true;
-      const functionCreateCaseCallable = firebaseFunctions.httpsCallable(
-        "createCaseCallable"
-      );
+
       if (this.createCaseForm.accept !== true) {
         this.$q.notify({
           color: "red-5",
@@ -398,6 +740,87 @@ export default {
           this.errored = true;
         });
     },
+    // EmailMessage
+    getEmailMessage() {
+      this.isLoading.emailMessage = true;
+
+      functionsGetEmailMessage()
+        .then(response => {
+          console.log(response.data);
+          this.emailMessages = response.data;
+          this.isLoading.emailMessage = false;
+        })
+        .catch(error => {
+          console.log(error.code);
+          console.log(error.message);
+          console.log(error.details);
+          this.isLoading.emailMessage = false;
+        });
+    },
+    getEmailMessageRelated(parentId) {
+      this.isLoading.emailMessageRelated = true;
+
+      functionsGetEmailMessageRelated({ parentId: parentId })
+        .then(response => {
+          console.log(response.data);
+          this.emailMessagesRelated = response.data;
+          this.isLoading.emailMessageRelated = false;
+        })
+        .catch(error => {
+          console.log(error.code);
+          console.log(error.message);
+          console.log(error.details);
+          this.isLoading.emailMessageRelated = false;
+        });
+    },
+    onSubmitEmailMessageForm() {
+      this.emailMessageObj.isLoading = true;
+
+      functionsCreateEmailMessage({
+        parentId: this.parentId,
+        subject: this.createEmailMessageForm.subject,
+        textBody: this.createEmailMessageForm.textBody,
+        messageDate: this.getNow()
+      })
+        .then(response => {
+          console.log(response);
+          this.$q.notify({
+            color: "green-4",
+            textColor: "white",
+            icon: "o_cloud_done",
+            message: "Submitted"
+          });
+          this.emailMessageObj.createEmailMessageResponse = response.data;
+          this.onResetEmailMessageForm();
+          this.emailMessageObj.isLoading = false;
+        })
+        .catch(error => {
+          console.log(error);
+          this.errored = true;
+          this.emailMessageObj.isLoading = false;
+        });
+    },
+    onResetEmailMessageForm() {
+      this.createEmailMessageForm.subject = null;
+      this.createEmailMessageForm.textBody = null;
+      this.createEmailMessageForm.messageDate = null;
+    },
+    // Subscriptions
+    getSubscriptionRelated(accountId) {
+      this.isLoading.subscriptionRelated = true;
+      functionsGetSubscriptionRelated({ accountId: accountId })
+        .then(response => {
+          console.log(response.data);
+          this.subscriptionsRelated = response.data;
+          this.isLoading.subscriptionRelated = false;
+        })
+        .catch(error => {
+          console.log(error.code);
+          console.log(error.message);
+          console.log(error.details);
+          this.isLoading.subscriptionRelated = false;
+        });
+    },
     postAuthedFunction(text) {
       this.isLoadingAuthedFunction = true;
       const functionPostAuthedFunction = firebaseFunctions.httpsCallable(
@@ -415,6 +838,25 @@ export default {
           console.log(error.details);
           this.isLoadingAuthedFunction = false;
         });
+    },
+    getNow() {
+      // const today = new Date();
+      // const date =
+      //   today.getFullYear() +
+      //   "-" +
+      //   (today.getMonth() + 1) +
+      //   "-" +
+      //   today.getDate();
+      // const time =
+      //   today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+      // const dateTime = date + " " + time;
+      let newTimeStamp = Date.now();
+      let formattedString = date.formatDate(
+        newTimeStamp,
+        "YYYY-MM-DDTHH:mm:ss.SSSZ"
+      );
+      // this.timestamp = formattedString;
+      return formattedString;
     }
   },
   mounted() {

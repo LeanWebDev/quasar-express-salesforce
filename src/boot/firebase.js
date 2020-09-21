@@ -29,6 +29,31 @@ const functionGetAccountsCallable = firebaseFunctions.httpsCallable(
 const functionGetCasesCallable = firebaseFunctions.httpsCallable(
   "getCasesCallable"
 );
+const functionGetCaseDetail = firebaseFunctions.httpsCallable("getCaseDetail");
+const functionCreateCaseCallable = firebaseFunctions.httpsCallable(
+  "createCaseCallable"
+);
+const functionsGetCaseDescriptionReason = firebaseFunctions.httpsCallable(
+  "getCaseDescriptionReason"
+);
+const functionsGetCaseDescriptionType = firebaseFunctions.httpsCallable(
+  "getCaseDescriptionType"
+);
+const functionsGetCaseRelated = firebaseFunctions.httpsCallable(
+  "getCaseRelated"
+);
+const functionsGetEmailMessage = firebaseFunctions.httpsCallable(
+  "getEmailMessage"
+);
+const functionsGetEmailMessageRelated = firebaseFunctions.httpsCallable(
+  "getEmailMessageRelated"
+);
+const functionsCreateEmailMessage = firebaseFunctions.httpsCallable(
+  "createEmailMessage"
+);
+const functionsGetSubscriptionRelated = firebaseFunctions.httpsCallable(
+  "getSubscriptionRelated"
+);
 
 export {
   // Services
@@ -37,5 +62,14 @@ export {
   firebaseFunctions,
   // Available functions
   functionGetAccountsCallable,
-  functionGetCasesCallable
+  functionGetCasesCallable,
+  functionGetCaseDetail,
+  functionsGetCaseDescriptionReason,
+  functionsGetCaseDescriptionType,
+  functionsGetCaseRelated,
+  functionCreateCaseCallable,
+  functionsGetEmailMessage,
+  functionsGetEmailMessageRelated,
+  functionsCreateEmailMessage,
+  functionsGetSubscriptionRelated
 };
