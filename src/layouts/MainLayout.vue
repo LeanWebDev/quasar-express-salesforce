@@ -14,39 +14,33 @@
         <q-toolbar-title>
           Quasar x Express x Salesforce
         </q-toolbar-title>
-
-        <q-btn
-          v-if="!loggedIn"
-          color="white"
-          icon-right="o_account_circle"
-          label="Auth"
-          class="absolute-right"
-          to="/auth"
-          flat
-          dense
-          no-caps
-        />
-        <q-btn
-          v-else
-          @click="logoutUser"
-          color="white"
-          icon-right="o_grass"
-          label="Logout"
-          class="absolute-right"
-          flat
-          dense
-          no-caps
-        />
+        <div class="row">
+          <q-btn icon="o_brightness_2" @click="setDark" flat rounded />
+          <q-btn
+            v-if="!loggedIn"
+            color="white"
+            icon-right="o_account_circle"
+            label="Auth"
+            to="/auth"
+            flat
+            dense
+            no-caps
+          />
+          <q-btn
+            v-else
+            @click="logoutUser"
+            color="white"
+            icon-right="o_grass"
+            label="Logout"
+            flat
+            dense
+            no-caps
+          />
+        </div>
       </q-toolbar>
     </q-header>
 
-    <q-drawer
-      v-model="leftDrawerOpen"
-      show-if-above
-      bordered
-      content-class="bg-grey-1"
-      mini
-    >
+    <q-drawer v-model="leftDrawerOpen" show-if-above bordered mini>
       <q-list>
         <q-item-label header class="text-grey-8">
           Object Types
@@ -57,6 +51,19 @@
           v-bind="link"
         />
       </q-list>
+      <q-separator spaced inset />
+      <q-card class="my-card">
+        <q-card-section>
+          <!-- <q-list>
+            <q-item v-for="(attr, index) in user" :key="index">
+              <q-item-label header class="text-grey-8">
+                {{ attr }}
+              </q-item-label>
+            </q-item>
+          </q-list> -->
+          <pre>{{ user }}</pre>
+        </q-card-section>
+      </q-card>
     </q-drawer>
 
     <q-page-container>
@@ -67,7 +74,7 @@
 
 <script>
 import EssentialLink from "components/EssentialLink.vue";
-import { mapState, mapActions } from "vuex";
+import { mapState, mapActions, mapGetters } from "vuex";
 
 const linksData = [
   {
@@ -126,14 +133,41 @@ export default {
   data() {
     return {
       leftDrawerOpen: false,
-      essentialLinks: linksData
+      essentialLinks: linksData,
+      layoutUser: {
+        preferences: {
+          darkMode: false
+        }
+      }
     };
   },
   computed: {
-    ...mapState("auth", ["loggedIn"])
+    ...mapState("auth", ["loggedIn", "user"]),
+    ...mapGetters("auth", ["user"]),
+    preferences: {
+      get() {
+        if (this.user.profile.preferences.darkMode) {
+          console.log(
+            "darkMode as a computed property" +
+              this.user.profile.preferences.darkMode
+          );
+        }
+        return this.$q.dark.set(this.user.profile.preferences.darkMode);
+      }
+    }
   },
   methods: {
-    ...mapActions("auth", ["logoutUser"])
-  }
+    ...mapActions("auth", ["logoutUser", "updateProfile"]),
+    setDark() {
+      this.$q.dark.toggle();
+      console.log("Dark mode is active?: " + this.$q.dark.isActive);
+      this.updateProfile({
+        preferences: {
+          darkMode: this.$q.dark.isActive
+        }
+      });
+    }
+  },
+  mounted() {}
 };
 </script>

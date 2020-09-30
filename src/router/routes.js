@@ -31,7 +31,10 @@ const routes = [
       },
       {
         path: "/cloud-functions",
-        component: () => import("pages/CloudFunctions.vue")
+        component: () => import("pages/CloudFunctions.vue"),
+        meta: {
+          requiresAuth: true
+        }
       },
       { path: "/product", component: () => import("pages/Product.vue") },
       {

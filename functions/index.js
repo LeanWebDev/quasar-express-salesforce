@@ -69,9 +69,12 @@ exports.createUserDocument = functions
   .auth.user()
   .onCreate(user => {
     const userDoc = {
-      uid: user.uid,
-      name: user.displayName || "No Name",
-      email: user.email
+      preferences: {
+        darkMode: false
+      },
+      sf: {
+        accountId: "0014K000004X8MNQA0"
+      }
     };
 
     return firestore

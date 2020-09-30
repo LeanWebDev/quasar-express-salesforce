@@ -18,11 +18,11 @@ const firebaseConfig = {
 // Initialise Firebase services
 const firebaseApp = firebase.initializeApp(firebaseConfig);
 const firebaseAuth = firebaseApp.auth();
-const firebaseDb = firebaseApp.database();
+const firebaseDb = firebaseApp.firestore();
 const firebaseFunctions = firebaseApp.functions("europe-west2");
 firebaseFunctions.useFunctionsEmulator("http://localhost:5001");
 
-// Declare available functions
+// Declare Function references
 const functionGetAccountsCallable = firebaseFunctions.httpsCallable(
   "getAccountsCallable"
 );
@@ -55,12 +55,15 @@ const functionsGetSubscriptionRelated = firebaseFunctions.httpsCallable(
   "getSubscriptionRelated"
 );
 
+// Declare Firestore references
+const userCollection = firebaseDb.collection("users");
+
 export {
   // Services
   firebaseAuth,
   firebaseDb,
   firebaseFunctions,
-  // Available functions
+  // Functions
   functionGetAccountsCallable,
   functionGetCasesCallable,
   functionGetCaseDetail,
@@ -71,5 +74,7 @@ export {
   functionsGetEmailMessage,
   functionsGetEmailMessageRelated,
   functionsCreateEmailMessage,
-  functionsGetSubscriptionRelated
+  functionsGetSubscriptionRelated,
+  // Collections
+  userCollection
 };
