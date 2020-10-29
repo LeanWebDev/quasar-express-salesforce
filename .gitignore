@@ -3,7 +3,7 @@
 node_modules
 
 # Prod
-/backend_optimity
+#/backend_optimity
 
 # Environment
 .env
